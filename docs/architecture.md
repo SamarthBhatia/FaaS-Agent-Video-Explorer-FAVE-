@@ -20,12 +20,13 @@ Today these scripts are orchestrated manually or via OSCAR-P. We will reorganize
    - Use MinIO/S3 bucket `fave-artifacts` (configurable) reachable from all OpenFaaS functions.  
    - Every payload between functions is a small JSON descriptor pointing to URIs inside the bucket, never raw binary data.
 2. **Functions**  
-   - `orchestrator`: accepts a request (`video_uri`, `query`), writes orchestration record, triggers downstream stages sequentially (or fan-out), monitors completion, aggregates output summary.  
+   - `orchestrator`: accepts a request (`video_uri`, `query`), writes orchestration record, triggers downstream stages sequentially (or fan-out), monitors completion, aggregates output summary. Implementation lives in `functions/orchestrator/` and currently supports a dry-run mode until all stages are ready.  
    - Processing stages (`stage-ffmpeg-0`, `stage-librosa`, `stage-ffmpeg-1`, `stage-ffmpeg-2`, `stage-deepspeech`, `stage-ffmpeg-3`, `stage-object-detector`). Each stage:  
      - Downloads required artifacts to `/tmp`.  
      - Executes its transformation (ffmpeg/librosa/deepspeech/ONNX).  
      - Uploads results to `fave-artifacts/requests/{request_id}/{stage}/`.  
      - Returns metadata JSON: `{request_id, stage, output_uri, metrics}`.
+     - `stage-ffmpeg-0` has been ported under `functions/stage-ffmpeg-0/`, following the original script’s logic to extract audio with ffmpeg, package it with a video copy, and upload `media.tar.gz`.
 3. **Data Flow**  
    ```
    Client -> orchestrator -> stage-ffmpeg-0 -> stage-librosa -> stage-ffmpeg-1 -> 

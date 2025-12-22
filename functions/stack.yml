@@ -14,3 +14,13 @@ functions:
     secrets:
       - artifact-access-key
       - artifact-secret-key
+
+  stage-ffmpeg-0:
+    lang: dockerfile
+    handler: ./functions/stage-ffmpeg-0
+    image: fave-stage-ffmpeg-0:dev
+    environment:
+      STAGE_NAME: stage-ffmpeg-0
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key
