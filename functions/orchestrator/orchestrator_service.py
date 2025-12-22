@@ -13,7 +13,7 @@ from pydantic import ValidationError
 
 from logging_helper import log_event, log_exception
 from metrics_helper import compute_cost_unit, get_memory_limit_mb, stage_timer
-from schemas import ArtifactRef, OrchestratorRequest, StagePayload, StageResult
+from schemas import ArtifactRef, OrchestratorRequest, StagePayload, StageResult, StageMetrics
 from state_helper import append_stage_entry, save_state, update_state
 from storage_helper import copy_object, upload_file
 
@@ -27,15 +27,16 @@ class OrchestratorService:
     def __init__(self) -> None:
         self.gateway_url = os.getenv("GATEWAY_URL", "http://gateway.openfaas:8080")
         self.bucket = os.getenv("ARTIFACT_BUCKET", "fave-artifacts")
-        self.dry_run = os.getenv("ORCHESTRATOR_DRY_RUN", "true").lower() in {"1", "true", "yes"}
-        self.pipeline = [
+        self.dry_run = os.getenv("ORCHESTRATOR_DRY_RUN", "false").lower() in {"1", "true", "yes"}
+        self.enable_object_detector = os.getenv("ENABLE_OBJECT_DETECTOR", "false").lower() in {"1", "true", "yes"}
+        self.linear_stages = [
             "stage-ffmpeg-0",
             "stage-librosa",
-            "stage-ffmpeg-1",
+        ]
+        self.clip_pipeline = [
             "stage-ffmpeg-2",
             "stage-deepspeech",
             "stage-ffmpeg-3",
-            "stage-object-detector",
         ]
         self.memory_limit_mb = get_memory_limit_mb()
 
@@ -62,6 +63,7 @@ class OrchestratorService:
             input_uri = self._ensure_input_artifact(req.video_uri, request_id)
             update_state(request_id, input_uri=input_uri)
             result = self._run_pipeline(request_id, input_uri, req)
+            update_state(request_id, status="COMPLETED", result=result)
             return {"status": "ok", "request_id": request_id, "result": result}
         except Exception as exc:  # pylint: disable=broad-except
             log_exception("orchestrator", request_id, exc)
@@ -110,35 +112,121 @@ class OrchestratorService:
         without invoking downstream functions.
         """
         current_input = input_uri
-        stage_results: List[Dict[str, Any]] = []
+        initial_results: List[Dict[str, Any]] = []
+        for stage_name in self.linear_stages:
+            result = self._execute_stage(stage_name, current_input, request_id, req.profile, {})
+            initial_results.append(self._summarize_result(result))
+            current_input = self._next_input_uri(result, current_input)
 
-        for stage_name in self.pipeline:
-            payload = StagePayload(
-                request_id=request_id,
-                stage=stage_name,
-                input_uri=current_input,
-                config={"profile": req.profile},
+        ffmpeg1_result = self._execute_stage("stage-ffmpeg-1", current_input, request_id, req.profile, {})
+        initial_results.append(self._summarize_result(ffmpeg1_result))
+        clip_refs = ffmpeg1_result.outputs
+
+        clip_results: List[Dict[str, Any]] = []
+        for idx, clip_ref in enumerate(clip_refs):
+            clip_uri = clip_ref.uri
+            clip_stage_entries = []
+            for stage_name in self.clip_pipeline:
+                result = self._execute_stage(
+                    stage_name,
+                    clip_uri,
+                    request_id,
+                    req.profile,
+                    {"clip_index": idx},
+                )
+                clip_stage_entries.append(self._summarize_result(result, extra={"clip_index": idx}))
+                clip_uri = self._next_input_uri(result, clip_uri)
+
+            if self.enable_object_detector:
+                od_result = self._execute_stage(
+                    "stage-object-detector",
+                    clip_uri,
+                    request_id,
+                    req.profile,
+                    {"clip_index": idx},
+                )
+                clip_stage_entries.append(self._summarize_result(od_result, extra={"clip_index": idx}))
+            else:
+                od_result = self._object_detector_stub(request_id, idx)
+                clip_stage_entries.append(self._summarize_result(od_result, extra={"clip_index": idx}))
+
+            clip_results.append(
+                {
+                    "clip_index": idx,
+                    "input_uri": clip_ref.uri,
+                    "stages": clip_stage_entries,
+                }
             )
 
-            if self.dry_run:
-                result = self._simulate_stage(payload)
-            else:
-                result = self._invoke_stage(stage_name, payload)
+        return {"linear": initial_results, "clips": clip_results}
 
-            stage_entry = {
+    def _execute_stage(
+        self,
+        stage_name: str,
+        input_uri: str,
+        request_id: str,
+        profile: str,
+        fanout: Dict[str, Any],
+    ) -> StageResult:
+        payload = StagePayload(
+            request_id=request_id,
+            stage=stage_name,
+            input_uri=input_uri,
+            config={"profile": profile},
+            fanout=fanout,
+        )
+
+        if self.dry_run:
+            result = self._simulate_stage(payload)
+        else:
+            result = self._invoke_stage(stage_name, payload)
+
+        append_stage_entry(
+            request_id,
+            {
                 "stage": stage_name,
+                "request_id": request_id,
+                "fanout": fanout,
                 "outputs": [output.model_dump() for output in result.outputs],
                 "metrics": result.metrics.model_dump(),
                 "status": result.status,
-            }
-            append_stage_entry(request_id, stage_entry)
-            stage_results.append(stage_entry)
+                "message": result.message,
+            },
+        )
+        return result
 
-            if result.outputs:
-                current_input = result.outputs[-1].uri
+    @staticmethod
+    def _next_input_uri(result: StageResult, fallback: str) -> str:
+        return result.outputs[-1].uri if result.outputs else fallback
 
-        update_state(request_id, status="COMPLETED")
-        return {"stages": stage_results}
+    @staticmethod
+    def _summarize_result(result: StageResult, extra: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        summary = {
+            "stage": result.stage,
+            "status": result.status,
+            "message": result.message,
+            "outputs": [output.model_dump() for output in result.outputs],
+            "metrics": result.metrics.model_dump(),
+        }
+        if extra:
+            summary.update(extra)
+        return summary
+
+    def _object_detector_stub(self, request_id: str, clip_index: int) -> StageResult:
+        metrics = StageMetrics(
+            duration_ms=0,
+            memory_limit_mb=self.memory_limit_mb,
+            cold_start=False,
+            cost_unit=0.0,
+        )
+        return StageResult(
+            request_id=request_id,
+            stage="stage-object-detector",
+            outputs=[],
+            metrics=metrics,
+            status="skipped",
+            message=f"Object detector disabled for clip {clip_index}",
+        )
 
     def _simulate_stage(self, payload: StagePayload) -> StageResult:
         """Generate a placeholder StageResult for environments without downstream functions."""

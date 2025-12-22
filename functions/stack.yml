@@ -10,7 +10,8 @@ functions:
     environment:
       GATEWAY_URL: http://gateway.openfaas:8080
       ARTIFACT_BUCKET: fave-artifacts
-      ORCHESTRATOR_DRY_RUN: "true"
+      ORCHESTRATOR_DRY_RUN: "false"
+      ENABLE_OBJECT_DETECTOR: "false"
     secrets:
       - artifact-access-key
       - artifact-secret-key
