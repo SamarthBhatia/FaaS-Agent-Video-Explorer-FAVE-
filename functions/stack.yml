@@ -61,3 +61,13 @@ functions:
     secrets:
       - artifact-access-key
       - artifact-secret-key
+
+  stage-ffmpeg-3:
+    lang: dockerfile
+    handler: ./functions/stage-ffmpeg-3
+    image: fave-stage-ffmpeg-3:dev
+    environment:
+      FRAME_VF: "fps=12/60"
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key
