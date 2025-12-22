@@ -24,3 +24,13 @@ functions:
     secrets:
       - artifact-access-key
       - artifact-secret-key
+
+  stage-librosa:
+    lang: dockerfile
+    handler: ./functions/stage-librosa
+    image: fave-stage-librosa:dev
+    environment:
+      STAGE_NAME: stage-librosa
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key

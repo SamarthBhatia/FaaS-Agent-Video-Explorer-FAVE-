@@ -26,7 +26,8 @@ Today these scripts are orchestrated manually or via OSCAR-P. We will reorganize
      - Executes its transformation (ffmpeg/librosa/deepspeech/ONNX).  
      - Uploads results to `fave-artifacts/requests/{request_id}/{stage}/`.  
      - Returns metadata JSON: `{request_id, stage, output_uri, metrics}`.
-     - `stage-ffmpeg-0` has been ported under `functions/stage-ffmpeg-0/`, following the original script’s logic to extract audio with ffmpeg, package it with a video copy, and upload `media.tar.gz`.
+     - `stage-ffmpeg-0` has been ported under `functions/stage-ffmpeg-0/`, following the original script’s logic to extract audio with ffmpeg, package it with a video copy, and upload `media.tar.gz`.  
+     - `stage-librosa` has been implemented under `functions/stage-librosa/`, replicating the timestamp extraction logic to produce `segments.tar.gz` containing `timestamps.txt` + `video.mp4`.
 3. **Data Flow**  
    ```
    Client -> orchestrator -> stage-ffmpeg-0 -> stage-librosa -> stage-ffmpeg-1 -> 
