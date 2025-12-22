@@ -55,20 +55,15 @@ tmp/
 All functions read these variables to configure the boto3/minio client.
 
 ## Local Development Setup
-1. Run MinIO locally:
+1. Run MinIO locally (shortcut script):
    ```bash
-   docker run -p 9000:9000 -p 9090:9090 \
-     -e MINIO_ROOT_USER=faveadmin \
-     -e MINIO_ROOT_PASSWORD=favesecret \
-     -v ~/minio/data:/data \
-     quay.io/minio/minio server /data --console-address ":9090"
+   ./scripts/minio-dev.sh
    ```
-2. Create bucket:
+2. Bootstrap bucket + alias (requires `mc` CLI):
    ```bash
-   mc alias set fave http://localhost:9000 faveadmin favesecret
-   mc mb fave/fave-artifacts
+   ./scripts/minio-bootstrap.sh
    ```
-3. Populate `.env` or OpenFaaS secrets:
+3. Populate `.env` or OpenFaaS secrets (see `.env.example` and `scripts/create-faassecrets.sh`):
    ```
    ARTIFACT_ENDPOINT=http://minio.default.svc.cluster.local:9000
    ARTIFACT_BUCKET=fave-artifacts
@@ -81,6 +76,11 @@ All functions read these variables to configure the boto3/minio client.
 - Use per-environment credentials; never commit secrets. Store them in OpenFaaS secrets/Kubernetes secrets.
 - Optionally enable TLS for MinIO endpoints in shared clusters.
 - Implement lifecycle policies to purge old artifacts (`tmp/` objects older than 7 days, per-request data older than experiment retention policy).
+
+## Helper Scripts
+- `scripts/minio-dev.sh`: runs a local MinIO container.
+- `scripts/minio-bootstrap.sh`: configures the bucket/alias using `mc`.
+- `scripts/create-faassecrets.sh`: pushes artifact credentials into OpenFaaS secrets.
 
 ## Next Steps
 1. Create helper module (`fave_storage.py`) wrapping S3 client interactions (download/upload/list) to avoid repetitive code.

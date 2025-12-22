@@ -47,7 +47,7 @@
    - `schemas.py` (pydantic models for payload/response)
 
 ## Publishing
-- Build locally: `docker build -t fave-base:dev base-image/`.
+- Build locally: `./scripts/build-base-image.sh` (uses Docker locally and tags as `fave-base:dev` by default).
 - Push to registry accessible by OpenFaaS cluster.
 - Note digest/tag in documentation for deterministic deployments.
 
