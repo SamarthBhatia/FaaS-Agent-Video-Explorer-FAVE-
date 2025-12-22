@@ -42,3 +42,11 @@ functions:
     secrets:
       - artifact-access-key
       - artifact-secret-key
+
+  stage-ffmpeg-2:
+    lang: dockerfile
+    handler: ./functions/stage-ffmpeg-2
+    image: fave-stage-ffmpeg-2:dev
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key
