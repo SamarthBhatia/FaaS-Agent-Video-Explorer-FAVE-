@@ -50,3 +50,14 @@ functions:
     secrets:
       - artifact-access-key
       - artifact-secret-key
+
+  stage-deepspeech:
+    lang: dockerfile
+    handler: ./functions/stage-deepspeech
+    image: fave-stage-deepspeech:dev
+    environment:
+      DEEPSPEECH_MODEL: /opt/models/deepspeech-0.9.3-models.pbmm
+      DEEPSPEECH_SCORER: /opt/models/deepspeech-0.9.3-models.scorer
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key
