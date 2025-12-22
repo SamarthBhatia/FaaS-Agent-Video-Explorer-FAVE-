@@ -1,0 +1,16 @@
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  orchestrator:
+    lang: dockerfile
+    handler: ./functions/orchestrator
+    image: fave-orchestrator:dev
+    environment:
+      GATEWAY_URL: http://gateway.openfaas:8080
+      ARTIFACT_BUCKET: fave-artifacts
+      ORCHESTRATOR_DRY_RUN: "true"
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key

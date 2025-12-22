@@ -16,7 +16,7 @@
      "profile": "cold"
    }
    ```
-2. Orchestrator:
+2. Orchestrator (`functions/orchestrator/`):
    - Downloads or copies source video into `fave-artifacts/requests/{id}/input/`.
    - Writes `state.json` with status `INIT`.
    - Calls `invoke_stage("stage-ffmpeg-0", payload)`.
@@ -73,4 +73,5 @@ def handle(req):
 1. Implement `common/schemas.py` (request/response models).
 2. Create orchestrator handler (`handler.py`) using base image and helper modules.
 3. Add resume logic reading `state.json`.
-4. Build and deploy orchestrator function first, using mock responses from downstream stages until they exist.
+4. Build and deploy orchestrator function first (`functions/orchestrator/`), leveraging the dry-run mode until downstream stages exist.
+- **Dry-run option**: Set `ORCHESTRATOR_DRY_RUN=true` (default) to simulate stage outputs until downstream functions are implemented.

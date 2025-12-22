@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple
@@ -126,3 +127,24 @@ def write_json(data: Dict, uri: str) -> str:
     finally:
         if tmp_path.exists():
             tmp_path.unlink()
+
+
+def copy_object(source_uri: str, dest_uri: str) -> str:
+    """
+    Copy an object between URIs. Falls back to download/upload if cross-bucket copy fails.
+    """
+    src_bucket, src_key = _parse_s3_uri(source_uri)
+    dst_bucket, dst_key = _parse_s3_uri(dest_uri)
+    client = _s3_client()
+    try:
+        client.copy({"Bucket": src_bucket, "Key": src_key}, dst_bucket, dst_key)
+    except ClientError:
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        try:
+            client.download_file(src_bucket, src_key, str(tmp_path))
+            client.upload_file(str(tmp_path), dst_bucket, dst_key)
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+    return f"s3://{dst_bucket}/{dst_key}"

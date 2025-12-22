@@ -17,18 +17,16 @@
   - `metrics.py`: utilities for measuring runtime, memory limit retrieval.
 
 ## Build Steps
-1. Create `base-image/` directory with Dockerfile:
+1. Base Dockerfile lives at `base-image/Dockerfile`:
    ```Dockerfile
    FROM python:3.11-slim
-   RUN apt-get update && apt-get install -y --no-install-recommends \
-       ffmpeg libgl1 libglib2.0-0 libsndfile1 wget ca-certificates \
-       && rm -rf /var/lib/apt/lists/*
-   COPY requirements.txt /tmp/
+   ...
+   COPY requirements.txt /tmp/requirements.txt
    RUN pip install --no-cache-dir -r /tmp/requirements.txt
    COPY common/ /opt/fave_common/
    ENV PYTHONPATH=/opt/fave_common:${PYTHONPATH}
    ```
-2. `requirements.txt` (shared):
+2. Install dependencies via `base-image/requirements.txt`:
    ```
    boto3==1.35.0
    minio==7.2.15
@@ -42,14 +40,14 @@
    pydantic==2.8.0
    deepspeech==0.9.3
    ```
-3. `common/` contents:
+3. Shared helper modules in `base-image/common/`:
    - `storage_helper.py`
    - `logging_helper.py`
    - `metrics_helper.py`
    - `schemas.py` (pydantic models for payload/response)
 
 ## Publishing
-- Build locally: `docker build -t ghcr.io/<user>/fave-base:0.1 base-image/`.
+- Build locally: `docker build -t fave-base:dev base-image/`.
 - Push to registry accessible by OpenFaaS cluster.
 - Note digest/tag in documentation for deterministic deployments.
 
@@ -63,3 +61,4 @@
 2. Implement helper modules as described.
 3. Build + push initial image, document tag in deployment guide.
 4. Validate by running a sample stage locally using the base image.
+5. Update `functions/orchestrator/Dockerfile` (and future stage Dockerfiles) to reference the published base image tag via the `BASE_IMAGE` build argument.
