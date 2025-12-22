@@ -108,7 +108,8 @@
 - Final report summarizing methodology, experiments, and conclusions.
 
 ## 7. Next Immediate Actions
-1. Locate/import VideoSearcher baseline assets.  
-2. Stand up shared storage + verify access credentials.  
-3. Draft architecture diagrams and storage conventions based on the above plan.  
-4. Update `status.md` after each concrete step is completed.
+1. Locate/import VideoSearcher baseline assets. ✅  
+2. Stand up shared storage + verify access credentials (see `docs/storage.md` for plan; implementation pending).  
+3. Draft architecture diagrams and storage conventions (see `docs/architecture.md` + `docs/storage.md`).  
+4. Document base image and orchestrator designs (`docs/base-image.md`, `docs/orchestrator.md`).  
+5. Update `status.md` after each concrete step is completed.
