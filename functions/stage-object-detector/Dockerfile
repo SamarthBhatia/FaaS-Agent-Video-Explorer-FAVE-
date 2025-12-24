@@ -1,11 +1,11 @@
 FROM fave-base:dev
 
-ARG MODEL_URL=https://github.com/onnx/models/raw/main/validated/vision/object_detection_segmentation/tiny-yolov4/model/tiny-yolov4-11.onnx
-ARG LABEL_URL=https://raw.githubusercontent.com/onnx/models/main/validated/vision/object_detection_segmentation/tiny-yolov4/dependencies/coco.names
+ARG MODEL_URL=https://huggingface.co/Kalray/yolov4-tiny/resolve/main/yolov4-tiny.onnx
+ARG LABEL_URL=https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names
 
 RUN mkdir -p /opt/models && \
-    touch /opt/models/model.onnx && \
-    touch /opt/models/coco.names
+    wget -O /opt/models/model.onnx "${MODEL_URL}" && \
+    wget -O /opt/models/coco.names "${LABEL_URL}"
 
 COPY . /workspace/
 

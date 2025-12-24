@@ -10,6 +10,7 @@ functions:
     environment:
       GATEWAY_URL: http://gateway.openfaas:8080
       ARTIFACT_BUCKET: fave-artifacts
+      ARTIFACT_ENDPOINT: "http://minio:9000"
       ORCHESTRATOR_DRY_RUN: "false"
       ENABLE_OBJECT_DETECTOR: "true"
     secrets:
@@ -22,6 +23,7 @@ functions:
     image: fave-stage-ffmpeg-0:dev
     environment:
       STAGE_NAME: stage-ffmpeg-0
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -32,6 +34,7 @@ functions:
     image: fave-stage-librosa:dev
     environment:
       STAGE_NAME: stage-librosa
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -40,6 +43,8 @@ functions:
     lang: dockerfile
     handler: ./functions/stage-ffmpeg-1
     image: fave-stage-ffmpeg-1:dev
+    environment:
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -48,6 +53,8 @@ functions:
     lang: dockerfile
     handler: ./functions/stage-ffmpeg-2
     image: fave-stage-ffmpeg-2:dev
+    environment:
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -59,6 +66,7 @@ functions:
     environment:
       DEEPSPEECH_MODEL: /opt/models/deepspeech-0.9.3-models.pbmm
       DEEPSPEECH_SCORER: /opt/models/deepspeech-0.9.3-models.scorer
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -69,6 +77,7 @@ functions:
     image: fave-stage-ffmpeg-3:dev
     environment:
       FRAME_VF: "fps=12/60"
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -80,6 +89,7 @@ functions:
     environment:
       MODEL_PATH: /opt/models/model.onnx
       LABEL_PATH: /opt/models/coco.names
+      ARTIFACT_ENDPOINT: "http://minio:9000"
     secrets:
       - artifact-access-key
       - artifact-secret-key
