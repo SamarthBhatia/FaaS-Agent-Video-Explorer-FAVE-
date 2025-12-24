@@ -109,7 +109,8 @@ class StageObjectDetectorService:
                 "note": "Full post-processing skipped for prototype"
             }
 
-            output_uri = f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/result.json"
+            input_stem = Path(payload.input_uri).stem
+            output_uri = f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/{input_stem}.json"
             write_json(summary, output_uri)
             
             log_event(STAGE_NAME, "completed", request_id=payload.request_id, output_uri=output_uri)

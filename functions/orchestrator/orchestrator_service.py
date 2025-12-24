@@ -138,27 +138,38 @@ class OrchestratorService:
         for idx, clip_ref in enumerate(clip_refs):
             clip_uri = clip_ref.uri
             clip_stage_entries = []
-            for stage_name in self.clip_pipeline:
-                result = self._execute_stage(
-                    stage_name,
-                    clip_uri,
-                    request_id,
-                    req.profile,
-                    {"clip_index": idx},
-                )
-                clip_stage_entries.append(self._summarize_result(result, extra={"clip_index": idx}))
-                clip_uri = self._next_input_uri(result, clip_uri)
-
-            if self.enable_object_detector:
-                od_result = self._execute_stage(
-                    "stage-object-detector",
-                    clip_uri,
-                    request_id,
-                    req.profile,
-                    {"clip_index": idx},
-                )
-                clip_stage_entries.append(self._summarize_result(od_result, extra={"clip_index": idx}))
-            else:
+            
+            # 1. Clip Compression (ffmpeg-2)
+            res_ffmpeg2 = self._execute_stage("stage-ffmpeg-2", clip_uri, request_id, req.profile, {"clip_index": idx})
+            clip_stage_entries.append(self._summarize_result(res_ffmpeg2, extra={"clip_index": idx}))
+            
+            # 2. Transcription (deepspeech)
+            uri_ds_in = self._next_input_uri(res_ffmpeg2, clip_uri)
+            res_ds = self._execute_stage("stage-deepspeech", uri_ds_in, request_id, req.profile, {"clip_index": idx})
+            clip_stage_entries.append(self._summarize_result(res_ds, extra={"clip_index": idx}))
+            
+            # 3. Frame Sampling (ffmpeg-3)
+            uri_ff3_in = self._next_input_uri(res_ds, uri_ds_in)
+            res_ff3 = self._execute_stage("stage-ffmpeg-3", uri_ff3_in, request_id, req.profile, {"clip_index": idx})
+            clip_stage_entries.append(self._summarize_result(res_ff3, extra={"clip_index": idx}))
+            
+            # 4. Object Detection (per frame)
+            frame_refs = res_ff3.outputs
+            if self.enable_object_detector and frame_refs:
+                for f_idx, frame_ref in enumerate(frame_refs):
+                    # frame_ref.metadata might contain "frame_index"
+                    frame_meta = frame_ref.metadata or {}
+                    fanout_info = {"clip_index": idx, "frame_index": frame_meta.get("frame_index", f_idx)}
+                    
+                    od_result = self._execute_stage(
+                        "stage-object-detector",
+                        frame_ref.uri,
+                        request_id,
+                        req.profile,
+                        fanout_info,
+                    )
+                    clip_stage_entries.append(self._summarize_result(od_result, extra=fanout_info))
+            elif not self.enable_object_detector:
                 od_result = self._object_detector_stub(request_id, idx)
                 clip_stage_entries.append(self._summarize_result(od_result, extra={"clip_index": idx}))
 
