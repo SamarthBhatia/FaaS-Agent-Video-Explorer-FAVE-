@@ -159,7 +159,11 @@ class OrchestratorService:
                 for f_idx, frame_ref in enumerate(frame_refs):
                     # frame_ref.metadata might contain "frame_index"
                     frame_meta = frame_ref.metadata or {}
-                    fanout_info = {"clip_index": idx, "frame_index": frame_meta.get("frame_index", f_idx)}
+                    fanout_info = {
+                        "clip_index": idx,
+                        "frame_index": frame_meta.get("frame_index", f_idx),
+                        "frame_uri": frame_ref.uri,
+                    }
                     
                     od_result = self._execute_stage(
                         "stage-object-detector",

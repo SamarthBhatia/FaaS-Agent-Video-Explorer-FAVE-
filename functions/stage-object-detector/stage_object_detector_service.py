@@ -80,44 +80,46 @@ class StageObjectDetectorService:
         log_event(STAGE_NAME, "start", request_id=payload.request_id, input_uri=payload.input_uri)
         
         if not self.sess:
-             raise RuntimeError("Model not initialized")
+             # Fallback if model is not present (e.g., local dev without mounting models)
+             log_event(STAGE_NAME, "warning", message="Model not initialized, returning placeholder")
+             summary = {
+                 "model": "placeholder",
+                 "detections": [],
+                 "note": "Model file not found; inference skipped."
+             }
+        else:
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                tmp_path = Path(tmp_dir)
+                image_path = tmp_path / "input.jpg"
+                download_file(payload.input_uri, image_path)
 
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            tmp_path = Path(tmp_dir)
-            image_path = tmp_path / "input.jpg"
-            download_file(payload.input_uri, image_path)
+                # Preprocess
+                img = cv2.imread(str(image_path))
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                img = cv2.resize(img, (416, 416))
+                img = img.astype(np.float32) / 255.0
+                img = img.transpose(2, 0, 1)
+                img = np.expand_dims(img, axis=0)
 
-            # Preprocess
-            img = cv2.imread(str(image_path))
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            img = cv2.resize(img, (416, 416))
-            img = img.astype(np.float32) / 255.0
-            img = img.transpose(2, 0, 1)
-            img = np.expand_dims(img, axis=0)
+                # Inference
+                detections = self.sess.run(None, {self.input_name: img})
 
-            # Inference
-            detections = self.sess.run(None, {self.input_name: img})
+                # Postprocess (Simplified: just count detections > threshold)
+                summary = {
+                    "model": "tiny-yolov4",
+                    "raw_output_shapes": [str(d.shape) for d in detections],
+                    "note": "Full post-processing skipped for prototype"
+                }
 
-            # Postprocess (Simplified: just count detections > threshold)
-            # Tiny YOLO output depends on version, usually [boxes, scores, indices] or similar
-            # For this 'tiny-yolov4-11.onnx', outputs are 'boxes' and 'confs'.
-            # We will just dump the raw shape or a summary for now to avoid complex parsing logic in this snippet.
-            
-            summary = {
-                "model": "tiny-yolov4",
-                "raw_output_shapes": [str(d.shape) for d in detections],
-                "note": "Full post-processing skipped for prototype"
-            }
-
-            fanout = payload.fanout or {}
-            clip_idx = fanout.get("clip_index", "0")
-            frame_idx = fanout.get("frame_index", Path(payload.input_uri).stem)
-            
-            output_uri = f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/clip_{clip_idx}/{frame_idx}.json"
-            write_json(summary, output_uri)
-            
-            log_event(STAGE_NAME, "completed", request_id=payload.request_id, output_uri=output_uri)
-            return output_uri
+        fanout = payload.fanout or {}
+        clip_idx = fanout.get("clip_index", "0")
+        frame_idx = fanout.get("frame_index", Path(payload.input_uri).stem)
+        
+        output_uri = f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/clip_{clip_idx}/{frame_idx}.json"
+        write_json(summary, output_uri)
+        
+        log_event(STAGE_NAME, "completed", request_id=payload.request_id, output_uri=output_uri)
+        return output_uri
 
     def _is_cold_start(self) -> bool:
         global COLD_START

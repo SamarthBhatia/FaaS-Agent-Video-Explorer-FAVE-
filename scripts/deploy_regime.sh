@@ -32,6 +32,12 @@ echo "Deploying regime: ${REGIME} (min=${MIN_REPLICAS}, max=${MAX_REPLICAS})"
 TEMP_STACK=$(mktemp /tmp/stack-XXXX.yml)
 cp "${STACK_FILE}" "${TEMP_STACK}"
 
+# Ensure PyYAML is available
+if ! python3 -c "import yaml" &> /dev/null; then
+    echo "PyYAML not found. Installing..."
+    pip3 install pyyaml
+fi
+
 # Use a simple python snippet to inject labels into each function
 python3 - <<EOF
 import yaml
