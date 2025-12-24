@@ -84,15 +84,6 @@ class StageDeepSpeechService:
                 cwd=tmp_path,
             )
 
-    @staticmethod
-    def _run_ffmpeg_dummy(output_path: Path):
-        """Generates a 1-second black video."""
-        cmd = [
-            "ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=black:s=1280x720:r=30",
-            "-t", "1", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(output_path)
-        ]
-        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
             clip_name = Path(payload.input_uri).stem
             output_uri = (
                 f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/{clip_name}.tar.gz"
@@ -123,6 +114,15 @@ class StageDeepSpeechService:
         except ImportError:
             log_event(STAGE_NAME, "warning", message="DeepSpeech module not found, using dummy transcript")
             transcript_path.write_text("Dummy transcript: DeepSpeech library not available.\n")
+
+    @staticmethod
+    def _run_ffmpeg_dummy(output_path: Path):
+        """Generates a 1-second black video."""
+        cmd = [
+            "ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=black:s=1280x720:r=30",
+            "-t", "1", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(output_path)
+        ]
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     @staticmethod
     def _run_tar(args, cwd: Path):

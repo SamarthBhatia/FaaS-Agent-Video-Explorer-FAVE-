@@ -5,7 +5,7 @@ import os
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -37,10 +37,13 @@ class StageObjectDetectorService:
             with open(self.label_path, "r") as f:
                 self.labels = [line.strip() for line in f.readlines()]
 
-        # Initialize session (lazy loading could be an option, but we do it here for cold start measurement)
+        # Initialize session
         try:
-            self.sess = ort.InferenceSession(self.model_path)
-            self.input_name = self.sess.get_inputs()[0].name
+            if os.path.exists(self.model_path) and os.path.getsize(self.model_path) > 0:
+                self.sess = ort.InferenceSession(self.model_path)
+                self.input_name = self.sess.get_inputs()[0].name
+            else:
+                self.sess = None
         except Exception as e:
             log_exception(STAGE_NAME, "init_model", e)
             self.sess = None
@@ -53,7 +56,7 @@ class StageObjectDetectorService:
             return {"status": "error", "message": str(exc)}
 
         with stage_timer() as elapsed:
-            output_uri = self._process(payload)
+            output_uri, artifact_metadata = self._process(payload)
 
         duration_ms = elapsed()
         metrics = {
@@ -65,7 +68,7 @@ class StageObjectDetectorService:
         log_event(STAGE_NAME, "metrics", request_id=payload.request_id, **metrics)
         
         # We output a reference to the JSON result
-        outputs = [ArtifactRef(type="json", uri=output_uri, metadata={})]
+        outputs = [ArtifactRef(type="json", uri=output_uri, metadata=artifact_metadata)]
         
         result = StageResult(
             request_id=payload.request_id,
@@ -76,11 +79,11 @@ class StageObjectDetectorService:
         )
         return json.loads(result.model_dump_json())
 
-    def _process(self, payload: StagePayload) -> str:
+    def _process(self, payload: StagePayload) -> Tuple[str, Dict[str, Any]]:
         log_event(STAGE_NAME, "start", request_id=payload.request_id, input_uri=payload.input_uri)
         
         if not self.sess:
-             # Fallback if model is not present (e.g., local dev without mounting models)
+             # Fallback if model is not present
              log_event(STAGE_NAME, "warning", message="Model not initialized, returning placeholder")
              summary = {
                  "model": "placeholder",
@@ -112,7 +115,7 @@ class StageObjectDetectorService:
                     # Inference
                     detections = self.sess.run(None, {self.input_name: img})
 
-                    # Postprocess (Simplified: just count detections > threshold)
+                    # Postprocess (Simplified summary)
                     summary = {
                         "model": "tiny-yolov4",
                         "raw_output_shapes": [str(d.shape) for d in detections],
@@ -136,16 +139,11 @@ class StageObjectDetectorService:
         if "frame_uri" in fanout:
             artifact_metadata["frame_uri"] = fanout["frame_uri"]
 
-        # We output a reference to the JSON result
-        outputs = [ArtifactRef(type="json", uri=output_uri, metadata=artifact_metadata)]
-        
-        result = StageResult(
-            request_id=payload.request_id,
-            stage=payload.stage,
-            outputs=outputs,
-            metrics=metrics,
-            status="success",
-        )
-        return json.loads(result.model_dump_json())
+        return output_uri, artifact_metadata
 
-    def _process(self, payload: StagePayload) -> str:
+    def _is_cold_start(self) -> bool:
+        global COLD_START
+        if COLD_START:
+            COLD_START = False
+            return True
+        return False
