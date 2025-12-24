@@ -66,6 +66,18 @@ class StageDeepSpeechService:
 
             self._run_deepspeech(audio_path, transcript_path)
 
+            # Ensure video exists for packaging; if not (e.g. extraction quirk), try to use the one from input
+            if not video_path.exists():
+                candidates = list(tmp_path.glob("*.mp4"))
+                if candidates:
+                    video_path = candidates[0]
+                else:
+                    # Last resort: if no mp4 found, create a dummy one or fail?
+                    # Ideally we shouldn't fail if we want robustness, but ffmpeg-3 needs it.
+                    # We will log a warning and let tar fail if truly missing, 
+                    # but typically "clip_compressed.mp4" comes from the input archive.
+                    pass
+
             output_archive = tmp_path / "transcript_bundle.tar.gz"
             self._run_tar(
                 ["-czf", str(output_archive), transcript_path.name, video_path.name],

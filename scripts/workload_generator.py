@@ -51,7 +51,8 @@ class WorkloadGenerator:
         interval = 1.0 / rps if rps > 0 else 0
         
         # Use a sensible worker count to avoid thread explosion, while allowing concurrency for slow tasks
-        max_workers = min(total_requests, 50) 
+        # Assuming typical max experiment size isn't huge, we can allow more workers to ensure start-times are respected.
+        max_workers = total_requests + 10
         
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = []

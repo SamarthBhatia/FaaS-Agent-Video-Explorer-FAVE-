@@ -127,11 +127,25 @@ class StageObjectDetectorService:
         write_json(summary, output_uri)
         
         log_event(STAGE_NAME, "completed", request_id=payload.request_id, output_uri=output_uri)
-        return output_uri
+        
+        # Return fanout metadata so orchestrator can log it
+        artifact_metadata = {
+            "clip_index": clip_idx,
+            "frame_index": frame_idx
+        }
+        if "frame_uri" in fanout:
+            artifact_metadata["frame_uri"] = fanout["frame_uri"]
 
-    def _is_cold_start(self) -> bool:
-        global COLD_START
-        if COLD_START:
-            COLD_START = False
-            return True
-        return False
+        # We output a reference to the JSON result
+        outputs = [ArtifactRef(type="json", uri=output_uri, metadata=artifact_metadata)]
+        
+        result = StageResult(
+            request_id=payload.request_id,
+            stage=payload.stage,
+            outputs=outputs,
+            metrics=metrics,
+            status="success",
+        )
+        return json.loads(result.model_dump_json())
+
+    def _process(self, payload: StagePayload) -> str:
