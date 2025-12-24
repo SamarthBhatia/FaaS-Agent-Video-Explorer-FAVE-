@@ -94,6 +94,12 @@ class StageDeepSpeechService:
 
     def _run_deepspeech(self, audio_path: Path, transcript_path: Path) -> None:
         try:
+            # First check if audio file exists
+            if not audio_path.exists():
+                log_event(STAGE_NAME, "warning", message=f"Audio file not found: {audio_path}")
+                transcript_path.write_text("Dummy transcript: Audio file missing.\n")
+                return
+
             import deepspeech
             import numpy as np
             import wave
@@ -111,9 +117,11 @@ class StageDeepSpeechService:
             text = ds.stt(audio)
             transcript_path.write_text(text.strip() + "\n")
             
-        except ImportError:
-            log_event(STAGE_NAME, "warning", message="DeepSpeech module not found, using dummy transcript")
-            transcript_path.write_text("Dummy transcript: DeepSpeech library not available.\n")
+        except (ImportError, Exception) as exc:
+            msg = f"DeepSpeech error or missing: {str(exc)}"
+            log_event(STAGE_NAME, "warning", message=msg)
+            if not transcript_path.exists():
+                transcript_path.write_text(f"Dummy transcript: {msg}\n")
 
     @staticmethod
     def _run_ffmpeg_dummy(output_path: Path):

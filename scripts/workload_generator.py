@@ -58,11 +58,13 @@ class WorkloadGenerator:
         interval = 1.0 / rps if rps > 0 else 0
         semaphore = threading.Semaphore(concurrency)
         
-        # Use a large enough pool to accommodate the concurrency limit
         with ThreadPoolExecutor(max_workers=concurrency + 5) as executor:
             futures = []
             start_workload = time.perf_counter()
             for i in range(total_requests):
+                # Acquire semaphore BEFORE sleeping/submitting to pace arrivals correctly
+                semaphore.acquire()
+                
                 expected_start = start_workload + (i * interval)
                 now = time.perf_counter()
                 if now < expected_start:
