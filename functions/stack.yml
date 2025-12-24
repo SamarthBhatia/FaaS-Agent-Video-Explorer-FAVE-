@@ -11,7 +11,7 @@ functions:
       GATEWAY_URL: http://gateway.openfaas:8080
       ARTIFACT_BUCKET: fave-artifacts
       ORCHESTRATOR_DRY_RUN: "false"
-      ENABLE_OBJECT_DETECTOR: "false"
+      ENABLE_OBJECT_DETECTOR: "true"
     secrets:
       - artifact-access-key
       - artifact-secret-key
@@ -69,6 +69,17 @@ functions:
     image: fave-stage-ffmpeg-3:dev
     environment:
       FRAME_VF: "fps=12/60"
+    secrets:
+      - artifact-access-key
+      - artifact-secret-key
+
+  stage-object-detector:
+    lang: dockerfile
+    handler: ./functions/stage-object-detector
+    image: fave-stage-object-detector:dev
+    environment:
+      MODEL_PATH: /opt/models/model.onnx
+      LABEL_PATH: /opt/models/coco.names
     secrets:
       - artifact-access-key
       - artifact-secret-key

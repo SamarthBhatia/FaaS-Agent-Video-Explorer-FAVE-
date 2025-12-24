@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 ARG BASE_IMAGE=fave-base:dev
-ARG WATCHDOG_VERSION=2024.4.1
+ARG WATCHDOG_VERSION=0.9.11
 
 FROM ghcr.io/openfaas/of-watchdog:${WATCHDOG_VERSION} as watchdog
 
