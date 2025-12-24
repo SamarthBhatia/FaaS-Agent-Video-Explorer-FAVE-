@@ -2,6 +2,7 @@ import argparse
 import json
 import time
 import uuid
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
@@ -16,7 +17,10 @@ class WorkloadGenerator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.client = httpx.Client(timeout=None)
 
-    def invoke_orchestrator(self, video_uri: str, profile: str = "default") -> Dict[str, Any]:
+    def invoke_orchestrator(self, video_uri: str, profile: str = "default", semaphore: threading.Semaphore = None) -> Dict[str, Any]:
+        if semaphore:
+            semaphore.acquire()
+        
         url = f"{self.gateway_url}/function/orchestrator"
         payload = {
             "video_uri": video_uri,
@@ -34,6 +38,9 @@ class WorkloadGenerator:
         except Exception as e:
             data = {"error": str(e)}
             status = "failure"
+        finally:
+            if semaphore:
+                semaphore.release()
         
         duration_ms = int((time.perf_counter() - start_time) * 1000)
         
@@ -45,16 +52,14 @@ class WorkloadGenerator:
             "profile": profile
         }
 
-    def run_steady(self, video_uri: str, total_requests: int, rps: float, profile: str):
-        print(f"Running steady workload: {total_requests} requests at {rps} RPS (profile: {profile})")
+    def run_steady(self, video_uri: str, total_requests: int, rps: float, profile: str, concurrency: int):
+        print(f"Running steady workload: {total_requests} requests at {rps} RPS (profile: {profile}, max_concurrency: {concurrency})")
         results = []
         interval = 1.0 / rps if rps > 0 else 0
+        semaphore = threading.Semaphore(concurrency)
         
-        # Use a sensible worker count to avoid thread explosion, while allowing concurrency for slow tasks
-        # Assuming typical max experiment size isn't huge, we can allow more workers to ensure start-times are respected.
-        max_workers = total_requests + 10
-        
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Use a large enough pool to accommodate the concurrency limit
+        with ThreadPoolExecutor(max_workers=concurrency + 5) as executor:
             futures = []
             start_workload = time.perf_counter()
             for i in range(total_requests):
@@ -63,7 +68,7 @@ class WorkloadGenerator:
                 if now < expected_start:
                     time.sleep(expected_start - now)
                 
-                futures.append(executor.submit(self.invoke_orchestrator, video_uri, profile))
+                futures.append(executor.submit(self.invoke_orchestrator, video_uri, profile, semaphore))
             
             for future in futures:
                 results.append(future.result())
@@ -94,6 +99,7 @@ if __name__ == "__main__":
     parser.add_argument("--pattern", choices=["steady", "burst"], default="steady", help="Workload pattern")
     parser.add_argument("--requests", type=int, default=1, help="Total requests for steady or burst size")
     parser.add_argument("--rps", type=float, default=1.0, help="Requests per second for steady pattern")
+    parser.add_argument("--concurrency", type=int, default=50, help="Max concurrent requests for steady workload")
     parser.add_argument("--profile", default="default", help="Configuration profile (e.g., cold, warm)")
     parser.add_argument("--output", default="experiments", help="Output directory for results")
     
@@ -102,6 +108,6 @@ if __name__ == "__main__":
     generator = WorkloadGenerator(args.gateway, Path(args.output))
     
     if args.pattern == "steady":
-        generator.run_steady(args.video, args.requests, args.rps, args.profile)
+        generator.run_steady(args.video, args.requests, args.rps, args.profile, args.concurrency)
     elif args.pattern == "burst":
         generator.run_burst(args.video, args.requests, args.profile)

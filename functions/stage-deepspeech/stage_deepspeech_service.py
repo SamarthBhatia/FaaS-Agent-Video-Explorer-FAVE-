@@ -66,23 +66,32 @@ class StageDeepSpeechService:
 
             self._run_deepspeech(audio_path, transcript_path)
 
-            # Ensure video exists for packaging; if not (e.g. extraction quirk), try to use the one from input
+            # Ensure video exists for packaging; if not (e.g. extraction quirk or fallback), try to use the one from input
             if not video_path.exists():
                 candidates = list(tmp_path.glob("*.mp4"))
                 if candidates:
                     video_path = candidates[0]
                 else:
-                    # Last resort: if no mp4 found, create a dummy one or fail?
-                    # Ideally we shouldn't fail if we want robustness, but ffmpeg-3 needs it.
-                    # We will log a warning and let tar fail if truly missing, 
-                    # but typically "clip_compressed.mp4" comes from the input archive.
-                    pass
+                    # Create a dummy 1-second black video to prevent downstream crash
+                    log_event(STAGE_NAME, "warning", message="No video found, generating dummy black clip")
+                    dummy_video = tmp_path / "dummy_black.mp4"
+                    self._run_ffmpeg_dummy(dummy_video)
+                    video_path = dummy_video
 
             output_archive = tmp_path / "transcript_bundle.tar.gz"
             self._run_tar(
                 ["-czf", str(output_archive), transcript_path.name, video_path.name],
                 cwd=tmp_path,
             )
+
+    @staticmethod
+    def _run_ffmpeg_dummy(output_path: Path):
+        """Generates a 1-second black video."""
+        cmd = [
+            "ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=black:s=1280x720:r=30",
+            "-t", "1", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(output_path)
+        ]
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             clip_name = Path(payload.input_uri).stem
             output_uri = (
