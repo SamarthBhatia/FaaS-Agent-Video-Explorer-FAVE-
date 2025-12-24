@@ -18,9 +18,7 @@ class WorkloadGenerator:
         self.client = httpx.Client(timeout=None)
 
     def invoke_orchestrator(self, video_uri: str, profile: str = "default", semaphore: threading.Semaphore = None) -> Dict[str, Any]:
-        if semaphore:
-            semaphore.acquire()
-        
+        # Note: Semaphore is acquired by the producer loop before calling this
         url = f"{self.gateway_url}/function/orchestrator"
         payload = {
             "video_uri": video_uri,

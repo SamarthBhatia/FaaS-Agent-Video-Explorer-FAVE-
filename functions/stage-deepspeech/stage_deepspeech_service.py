@@ -96,8 +96,9 @@ class StageDeepSpeechService:
         try:
             # First check if audio file exists
             if not audio_path.exists():
-                log_event(STAGE_NAME, "warning", message=f"Audio file not found: {audio_path}")
-                transcript_path.write_text("Dummy transcript: Audio file missing.\n")
+                msg = f"Audio file not found: {audio_path}"
+                log_event(STAGE_NAME, "warning", message=msg)
+                transcript_path.write_text(f"Dummy transcript: {msg}\n")
                 return
 
             import deepspeech
@@ -120,8 +121,7 @@ class StageDeepSpeechService:
         except (ImportError, Exception) as exc:
             msg = f"DeepSpeech error or missing: {str(exc)}"
             log_event(STAGE_NAME, "warning", message=msg)
-            if not transcript_path.exists():
-                transcript_path.write_text(f"Dummy transcript: {msg}\n")
+            transcript_path.write_text(f"Dummy transcript: {msg}\n")
 
     @staticmethod
     def _run_ffmpeg_dummy(output_path: Path):
