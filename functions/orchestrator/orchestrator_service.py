@@ -208,18 +208,20 @@ class OrchestratorService:
         else:
             result = self._invoke_stage(stage_name, payload)
 
-        append_stage_entry(
-            request_id,
-            {
-                "stage": stage_name,
-                "request_id": request_id,
-                "fanout": fanout,
-                "outputs": [output.model_dump() for output in result.outputs],
-                "metrics": result.metrics.model_dump(),
-                "status": result.status,
-                "message": result.message,
-            },
-        )
+        log_entry = {
+            "stage": stage_name,
+            "request_id": request_id,
+            "fanout": fanout,
+            "outputs": [output.model_dump() for output in result.outputs],
+            "metrics": result.metrics.model_dump(),
+            "status": result.status,
+            "message": result.message,
+        }
+        # Merge fanout keys (like frame_uri) directly into the log entry for visibility
+        if fanout:
+            log_entry.update(fanout)
+            
+        append_stage_entry(request_id, log_entry)
         return result
 
     @staticmethod
@@ -236,6 +238,7 @@ class OrchestratorService:
             "metrics": result.metrics.model_dump(),
         }
         if extra:
+            # Explicitly merge extra fields (like frame_uri) into the summary root
             summary.update(extra)
         return summary
 

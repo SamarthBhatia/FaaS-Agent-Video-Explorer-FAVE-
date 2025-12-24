@@ -34,8 +34,10 @@ cp "${STACK_FILE}" "${TEMP_STACK}"
 
 # Ensure PyYAML is available
 if ! python3 -c "import yaml" &> /dev/null; then
-    echo "PyYAML not found. Installing..."
-    pip3 install pyyaml
+    echo "Error: PyYAML is required to run this script."
+    echo "Please install it using: pip3 install pyyaml"
+    rm "${TEMP_STACK}"
+    exit 1
 fi
 
 # Use a simple python snippet to inject labels into each function

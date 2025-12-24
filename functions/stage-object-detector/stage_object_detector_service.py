@@ -95,21 +95,29 @@ class StageObjectDetectorService:
 
                 # Preprocess
                 img = cv2.imread(str(image_path))
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                img = cv2.resize(img, (416, 416))
-                img = img.astype(np.float32) / 255.0
-                img = img.transpose(2, 0, 1)
-                img = np.expand_dims(img, axis=0)
+                if img is None:
+                    log_event(STAGE_NAME, "warning", message=f"Failed to decode image: {image_path}", request_id=payload.request_id)
+                    summary = {
+                        "model": "placeholder",
+                        "detections": [],
+                        "note": "Image decode failed"
+                    }
+                else:
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img = cv2.resize(img, (416, 416))
+                    img = img.astype(np.float32) / 255.0
+                    img = img.transpose(2, 0, 1)
+                    img = np.expand_dims(img, axis=0)
 
-                # Inference
-                detections = self.sess.run(None, {self.input_name: img})
+                    # Inference
+                    detections = self.sess.run(None, {self.input_name: img})
 
-                # Postprocess (Simplified: just count detections > threshold)
-                summary = {
-                    "model": "tiny-yolov4",
-                    "raw_output_shapes": [str(d.shape) for d in detections],
-                    "note": "Full post-processing skipped for prototype"
-                }
+                    # Postprocess (Simplified: just count detections > threshold)
+                    summary = {
+                        "model": "tiny-yolov4",
+                        "raw_output_shapes": [str(d.shape) for d in detections],
+                        "note": "Full post-processing skipped for prototype"
+                    }
 
         fanout = payload.fanout or {}
         clip_idx = fanout.get("clip_index", "0")
