@@ -62,8 +62,20 @@ class OrchestratorService:
         try:
             input_uri = self._ensure_input_artifact(req.video_uri, request_id)
             update_state(request_id, input_uri=input_uri)
-            result = self._run_pipeline(request_id, input_uri, req)
-            update_state(request_id, status="COMPLETED", result=result)
+            
+            with stage_timer() as elapsed:
+                result = self._run_pipeline(request_id, input_uri, req)
+            
+            duration_ms = elapsed()
+            metrics = {
+                "duration_ms": duration_ms,
+                "memory_limit_mb": self.memory_limit_mb,
+                "cold_start": False, # Orchestrator cold start is handled at container level
+                "cost_unit": compute_cost_unit(duration_ms, self.memory_limit_mb),
+            }
+            log_event("orchestrator", "metrics", request_id=request_id, **metrics)
+            
+            update_state(request_id, status="COMPLETED", result=result, metrics=metrics)
             return {"status": "ok", "request_id": request_id, "result": result}
         except Exception as exc:  # pylint: disable=broad-except
             log_exception("orchestrator", request_id, exc)

@@ -43,6 +43,7 @@ class StageLibrosaService:
             "cold_start": self._is_cold_start(),
             "cost_unit": compute_cost_unit(duration_ms, self.memory_limit_mb),
         }
+        log_event(STAGE_NAME, "metrics", request_id=payload.request_id, **metrics)
         result = StageResult(
             request_id=payload.request_id,
             stage=payload.stage,
