@@ -109,8 +109,11 @@ class StageObjectDetectorService:
                 "note": "Full post-processing skipped for prototype"
             }
 
-            input_stem = Path(payload.input_uri).stem
-            output_uri = f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/{input_stem}.json"
+            fanout = payload.fanout or {}
+            clip_idx = fanout.get("clip_index", "0")
+            frame_idx = fanout.get("frame_index", Path(payload.input_uri).stem)
+            
+            output_uri = f"s3://{self.bucket}/requests/{payload.request_id}/{payload.stage}/clip_{clip_idx}/{frame_idx}.json"
             write_json(summary, output_uri)
             
             log_event(STAGE_NAME, "completed", request_id=payload.request_id, output_uri=output_uri)

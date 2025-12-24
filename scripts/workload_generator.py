@@ -50,12 +50,19 @@ class WorkloadGenerator:
         results = []
         interval = 1.0 / rps if rps > 0 else 0
         
-        with ThreadPoolExecutor(max_workers=total_requests) as executor:
+        # Use a sensible worker count to avoid thread explosion, while allowing concurrency for slow tasks
+        max_workers = min(total_requests, 50) 
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = []
+            start_workload = time.perf_counter()
             for i in range(total_requests):
+                expected_start = start_workload + (i * interval)
+                now = time.perf_counter()
+                if now < expected_start:
+                    time.sleep(expected_start - now)
+                
                 futures.append(executor.submit(self.invoke_orchestrator, video_uri, profile))
-                if interval > 0:
-                    time.sleep(interval)
             
             for future in futures:
                 results.append(future.result())
