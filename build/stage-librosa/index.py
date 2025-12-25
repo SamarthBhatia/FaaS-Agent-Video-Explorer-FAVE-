@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from handler import handle
 
 class Handler(BaseHTTPRequestHandler):
@@ -47,6 +47,7 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(os.getenv("port", 5000))
-    server = HTTPServer(('0.0.0.0', port), Handler)
-    sys.stderr.write(f"Starting server on port {port}\n")
+    # Using ThreadingHTTPServer to handle concurrent requests per pod
+    server = ThreadingHTTPServer(('0.0.0.0', port), Handler)
+    sys.stderr.write(f"Starting threading server on port {port}\n")
     server.serve_forever()

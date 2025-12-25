@@ -5,17 +5,17 @@ FROM ghcr.io/openfaas/of-watchdog:${WATCHDOG_VERSION} as watchdog
 
 FROM ${BASE_IMAGE} as app
 
-ARG MODEL_URL=https://huggingface.co/Kalray/yolov4-tiny/resolve/main/yolov4-tiny.onnx
-ARG LABEL_URL=https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names
+# Model paths
+RUN mkdir -p /opt/models
 
-RUN mkdir -p /opt/models && \
-    wget -O /opt/models/model.onnx "${MODEL_URL}" && \
-    wget -O /opt/models/coco.names "${LABEL_URL}"
+# Copy vendored models from local directory
+COPY models/model.onnx /opt/models/model.onnx
+COPY models/coco.names /opt/models/coco.names
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 
 WORKDIR /home/app
-COPY handler.py index.py stage_object_detector_service.py ./
+COPY . ./ 
 
 ENV fprocess="python3 index.py" \
     mode="http" \

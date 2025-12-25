@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2025-12-25T11:54:05.066601",
+    "duration_ms": 30405,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "final-verify-threaded"
+  }
+]

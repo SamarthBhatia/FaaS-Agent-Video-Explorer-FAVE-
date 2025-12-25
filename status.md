@@ -24,6 +24,9 @@
 - `stage-object-detector` uses real TinyYOLOv4 model downloaded from HuggingFace during build.
 - Deployment regimes (cold, warm, burst-ready) are managed via manual manifests in `openfaas-fn` namespace.
 - Bypassed OpenFaaS CE registry restriction by creating standard K8s Deployments/Services manually.
+- Current caveats:
+  - `index.py` uses the single-threaded `HTTPServer`, so each pod handles one request at a time; consider switching to `ThreadingHTTPServer` before high-concurrency experiments.
+  - The object-detector Dockerfile fetches model weights from HuggingFace at build time with no offline fallback; builds will fail without external network access.
 
 ## Next Steps
 1. **Experiments**:
