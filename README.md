@@ -83,34 +83,37 @@ kubectl port-forward -n default svc/minio 9000:9000 &
 
 ### 3. Configure Credentials
 
+Create the required secrets in the `openfaas-fn` namespace (where the functions run):
+```bash
+kubectl create namespace openfaas-fn || true
+
+# Access keys for the local dev MinIO
+kubectl create secret generic artifact-access-key \
+  --from-literal=artifact-access-key=faveadmin -n openfaas-fn
+kubectl create secret generic artifact-secret-key \
+  --from-literal=artifact-secret-key=favesecret -n openfaas-fn
+```
+
 Retrieve the OpenFaaS admin password and log in:
 ```bash
 PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
-faas-cli login --username admin --password-stdin <<< "$PASSWORD"
-```
-
-Create required secrets for the functions:
-```bash
-# We use default credentials for the local dev MinIO
-printf "faveadmin" | faas-cli secret create artifact-access-key --from-stdin
-printf "favesecret" | faas-cli secret create artifact-secret-key --from-stdin
+echo -n $PASSWORD | faas-cli login --username admin --password-stdin
 ```
 
 ### 4. Deploy Functions
 
-**Option A: Manual Manifests (Recommended for Local Dev)**
-*Bypasses OpenFaaS Community Edition image restrictions by using local Docker images.*
-
-Build the images:
+**Manual Manifests (Bypass CE Registry Restrictions)**
+Build the images locally:
 ```bash
 faas-cli build -f functions/stack.yml
 ```
 
-Apply the manifests directly:
+Apply the manifests:
 ```bash
 kubectl apply -f manifests/orchestrator-manual.yaml
 for f in manifests/stage-*-manual.yaml; do kubectl apply -f $f; done
 ```
+
 
 **Option B: Standard Deployment**
 *Requires pushing images to a public registry (Docker Hub/GHCR).*
