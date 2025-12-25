@@ -22,6 +22,14 @@ spec:
       - env:
         - name: fprocess
           value: python3 index.py
+        - name: read_timeout
+          value: "300s"
+        - name: write_timeout
+          value: "300s"
+        - name: upstream_timeout
+          value: "300s"
+        - name: exec_timeout
+          value: "300s"
         - name: mode
           value: http
         - name: http_upstream_url

@@ -28,11 +28,36 @@ class WorkloadGenerator:
         start_time = time.perf_counter()
         timestamp = datetime.now().isoformat()
         
+        data = {}
+        status = "failure"
+        max_retries = 3
+        
         try:
-            response = self.client.post(url, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            status = "success"
+            for attempt in range(max_retries):
+                try:
+                    # Timeout slightly longer than the function timeout (300s)
+                    response = self.client.post(url, json=payload, timeout=310.0)
+                    response.raise_for_status()
+                    data = response.json()
+                    status = "success"
+                    break
+                except httpx.HTTPStatusError as e:
+                    # Retry on 500, 502, 504
+                    if e.response.status_code in [500, 502, 504]:
+                        print(f"Attempt {attempt+1}/{max_retries} failed with status {e.response.status_code}. Retrying...")
+                        if attempt < max_retries - 1:
+                            time.sleep(2 * (attempt + 1))
+                        else:
+                            data = {"error": str(e)}
+                    else:
+                        raise e
+                except (httpx.RequestError, httpx.TimeoutException) as e:
+                     print(f"Attempt {attempt+1}/{max_retries} failed with error: {e}. Retrying...")
+                     if attempt < max_retries - 1:
+                        time.sleep(2 * (attempt + 1))
+                     else:
+                        data = {"error": str(e)}
+
         except Exception as e:
             data = {"error": str(e)}
             status = "failure"
