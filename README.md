@@ -1,139 +1,193 @@
 # FAVE – FaaS-Agent Video Explorer
 
-  FAVE is a serverless refactor of the VideoSearcher pipeline. It decomposes the original toy app into an eight-stage OpenFaaS workflow that extracts audio, segments
-  clips, performs transcription, samples frames, and runs YOLO-based detection—all using a claim-check pattern atop MinIO/S3 storage.
+FAVE is a serverless refactor of the VideoSearcher pipeline. It decomposes the original toy app into an eight-stage OpenFaaS workflow that extracts audio, segments clips, performs transcription, samples frames, and runs YOLO-based detection—all using a claim-check pattern atop MinIO/S3 storage.
 
-  ## Highlights
+## Highlights
 
-  - Agentic pipeline: Orchestrator + 7 processing stages (ffmpeg, librosa, deepspeech, detector).
-  - Serverless-first: OpenFaaS functions, MinIO-backed artifacts, telemetry with duration/cost metrics.
-  - Instrumentation: Workload generator, deployment regime script, and experiments for warm vs. cold behavior.
-  - Analysis: Comprehensive report (FINAL_REPORT.md) with findings on cold-start penalties, success rates, and cost trade-offs.
+- **Agentic pipeline**: Orchestrator + 7 processing stages (ffmpeg, librosa, deepspeech, detector).
+- **Serverless-first**: OpenFaaS functions, MinIO-backed artifacts, telemetry with duration/cost metrics.
+- **Instrumentation**: Workload generator, deployment regime script, and experiments for warm vs. cold behavior.
+- **Analysis**: Comprehensive report (`FINAL_REPORT.md`) with findings on cold-start penalties, success rates, and cost trade-offs.
 
-  ———
+---
 
-  ## Architecture Overview
+## Architecture Overview
 
-  1. orchestrator – stateful coordinator driving downstream stages and fan-out.
-  2. stage-ffmpeg-0 – audio extraction + silent-track fallback.
-  3. stage-librosa – speech segmentation via librosa.
-  4. stage-ffmpeg-1 – precise clip cutting based on timestamps.
-  5. stage-ffmpeg-2 – clip compression + 16 kHz audio packaging.
-  6. stage-deepspeech – transcript generation (dummy fallback for local runs).
-  7. stage-ffmpeg-3 – frame sampling (configurable rate).
-  8. stage-object-detector – YOLOv4-tiny inference on sampled frames.
+1.  **orchestrator** – stateful coordinator driving downstream stages and fan-out.
+2.  **stage-ffmpeg-0** – audio extraction + silent-track fallback.
+3.  **stage-librosa** – speech segmentation via librosa.
+4.  **stage-ffmpeg-1** – precise clip cutting based on timestamps.
+5.  **stage-ffmpeg-2** – clip compression + 16 kHz audio packaging.
+6.  **stage-deepspeech** – transcript generation (dummy fallback for local runs).
+7.  **stage-ffmpeg-3** – frame sampling (configurable rate).
+8.  **stage-object-detector** – YOLOv4-tiny inference on sampled frames.
 
-  All stages read/write artifacts in MinIO under requests/<id>/<stage>/…, keeping HTTP payloads lightweight.
+All stages read/write artifacts in MinIO under `requests/<id>/<stage>/…`, keeping HTTP payloads lightweight.
 
-  ———
+---
 
-  ## Repository Layout
+## Repository Layout
 
-  functions/                # OpenFaaS functions (Dockerfiles, services, index.py wrapper)
-  scripts/                  # Workload & deployment tooling
-  base-image/               # Shared Python base image (ffmpeg, boto3, helpers)
-  docs/                     # Architecture/storage/base-image notes
-  experiments/              # JSON logs from workloads
-  tests/                    # Smoke tests for final stages
-  FINAL_REPORT.md           # Full analysis of experiments
-  status.md                 # Project tracker (completed)
+- `functions/`: OpenFaaS functions (Dockerfiles, services, handlers).
+- `manifests/`: Kubernetes manifests for manual deployment (bypasses CE restrictions).
+- `scripts/`: Workload generator, deployment tools, and analysis scripts.
+- `base-image/`: Shared Python base image (ffmpeg, boto3, helpers).
+- `docs/`: Architecture and design notes.
+- `experiments/`: Raw data and logs from performance experiments.
+- `tests/`: Smoke tests for logic verification.
+- `FINAL_REPORT.md`: Full analysis of experimental results.
 
-  ———
+---
 
-  ## Prerequisites
+## Prerequisites
 
-  - Docker Desktop (with Kubernetes enabled) or another Kubernetes cluster.
-  - arkade, kubectl, faas-cli, mc (MinIO client).
-  - Python 3.9+ for scripts.
-  - Optional: poetry/pip for local dependencies if you run tests.
+- **Docker Desktop** (Kubernetes enabled) or a standard Kubernetes cluster.
+- **Tools**: `kubectl`, `faas-cli`, `mc` (MinIO client), `python3` (3.9+).
+- **Optional**: `arkade` (for easy OpenFaaS installation).
 
-  ———
+---
 
-  ## Quick Start
+## Quick Start
 
-  1. Clone & build base image
+### 1. Setup Environment
 
-     git clone <repo> && cd FAVE
-     ./scripts/build-base-image.sh
-  2. Start MinIO locally
+Clone the repository:
+```bash
+git clone <repo_url> && cd FAVE
+```
 
-     ./scripts/minio-dev.sh        # keep it running
-     ./scripts/minio-bootstrap.sh  # create bucket + alias
-  3. Install OpenFaaS
+Build the base image:
+```bash
+./scripts/build-base-image.sh
+```
 
-     arkade install openfaas
-     kubectl -n openfaas port-forward svc/gateway 8080:8080 >/tmp/gateway.log &
-     faas-cli login --gateway http://127.0.0.1:8080 -u admin --password <password>
-  4. Create secrets
+### 2. Install Infrastructure (Kubernetes)
 
-     export ARTIFACT_ACCESS_KEY=faveadmin
-     export ARTIFACT_SECRET_KEY=favesecret
-     printf "%s" "$ARTIFACT_ACCESS_KEY" | faas-cli secret create artifact-access-key --from-stdin
-     printf "%s" "$ARTIFACT_SECRET_KEY" | faas-cli secret create artifact-secret-key --from-stdin
-  5. Deploy functions
+Use `arkade` or Helm to install OpenFaaS and MinIO:
+```bash
+# Install OpenFaaS
+arkade install openfaas
 
-     faas-cli deploy -f functions/stack.yml
-  6. Run a smoke request
+# Install MinIO
+kubectl apply -f manifests/minio-k8s.yaml
+```
 
-     python scripts/workload_generator.py \
-       --gateway http://127.0.0.1:8080 \
-       --video s3://fave-artifacts/requests/sample.mp4 \
-       --pattern steady --requests 1 --rps 1
+**Port-forward services** (keep these running in background terminals):
+```bash
+# OpenFaaS Gateway (8080)
+kubectl port-forward -n openfaas svc/gateway 8080:8080 &
 
-  ———
+# MinIO API (9000)
+kubectl port-forward -n default svc/minio 9000:9000 &
+```
 
-  ## Running Experiments
+### 3. Configure Credentials
 
-  1. Apply regime (cold/warm/burst-ready):
+Retrieve the OpenFaaS admin password and log in:
+```bash
+PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+faas-cli login --username admin --password-stdin <<< "$PASSWORD"
+```
 
-     ./scripts/deploy_regime.sh warm
-  2. Run workload:
+Create required secrets for the functions:
+```bash
+# We use default credentials for the local dev MinIO
+printf "faveadmin" | faas-cli secret create artifact-access-key --from-stdin
+printf "favesecret" | faas-cli secret create artifact-secret-key --from-stdin
+```
 
-     python scripts/workload_generator.py \
-       --gateway http://127.0.0.1:8080 \
-       --video s3://fave-artifacts/... \
-       --pattern steady --requests 60 --rps 1 --output experiments
-  3. Switch to bursty:
+### 4. Deploy Functions
 
-     python scripts/workload_generator.py \
-       --pattern burst --requests 10 --profile warm --output experiments
-  4. Analyze:
+**Option A: Manual Manifests (Recommended for Local Dev)**
+*Bypasses OpenFaaS Community Edition image restrictions by using local Docker images.*
 
-     python final_analysis.py
-     python failure_analysis.py
+Build the images:
+```bash
+faas-cli build -f functions/stack.yml
+```
 
-  All experiment JSON logs land under experiments/. Final summaries and plots are captured in FINAL_REPORT.md.
+Apply the manifests directly:
+```bash
+kubectl apply -f manifests/orchestrator-manual.yaml
+for f in manifests/stage-*-manual.yaml; do kubectl apply -f $f; done
+```
 
-  ———
+**Option B: Standard Deployment**
+*Requires pushing images to a public registry (Docker Hub/GHCR).*
+```bash
+faas-cli up -f functions/stack.yml
+```
 
-  ## Results at a Glance
+### 5. Run a Smoke Test
 
-  | Regime | Pattern | P50 Latency (successes only) | Success Rate |
-  |--------|---------|------------------------------|--------------|
-  | Warm   | Baseline (1 req) | ~8.8 s | 100% |
-  | Warm   | Steady (1 RPS)   | ~25 s* | 1.7% |
-  | Cold   | Burst (10 req)   | >22 s  | 20% |
+Download a sample video and upload it to the local MinIO bucket:
+```bash
+# Setup bucket alias
+mc alias set fave-local http://127.0.0.1:9000 faveadmin favesecret
+mc mb --ignore-existing fave-local/fave-artifacts
 
-  *High failure rate; see report for details.
+# Download sample
+curl -L -o sample.mp4 https://github.com/intel-iot-devkit/sample-videos/raw/master/classroom.mp4
+mc cp sample.mp4 fave-local/fave-artifacts/input/sample.mp4
+```
 
-  Key findings:
+Trigger the pipeline:
+```bash
+python3 scripts/workload_generator.py \
+  --gateway http://127.0.0.1:8080 \
+  --video s3://fave-artifacts/input/sample.mp4 \
+  --pattern steady --requests 1 --rps 1
+```
 
-  - Cold starts add 15–20 s due to heavy Python/ONNX initialization.
-  - Default OpenFaaS timeouts are insufficient for multi-stage media pipelines.
-  - Atomic state management (or a dedicated DB) is essential once orchestrations run in parallel.
+---
 
-  ———
+## Running Experiments
 
-  ## Troubleshooting & Notes
+We provide tools to simulate different deployment regimes (Warm vs. Cold) and traffic patterns.
 
-  - All functions rely on the bundled index.py wrapper (ThreadingHTTPServer) to handle chunked requests and concurrency.
-  - stage-deepspeech runs a dummy path when real models aren’t available; swap in actual models if you need true transcripts.
-  - You can run tests/smoke_test_stages.py locally to validate ffmpeg/object detector logic without hitting OpenFaaS.
+1.  **Apply a Regime**:
+    ```bash
+    # Scales functions to 1 replica (Warm) or 0/low resources (Cold)
+    ./scripts/deploy_regime.sh warm
+    ```
 
-  ———
+2.  **Run Workload**:
+    ```bash
+    # Steady state (1 req/sec for 60s)
+    python3 scripts/workload_generator.py \
+      --pattern steady --requests 60 --rps 1 --profile warm-steady
 
-  ## License & Acknowledgments
+    # Burst (10 concurrent requests)
+    python3 scripts/workload_generator.py \
+      --pattern burst --requests 10 --profile warm-burst
+    ```
 
-  The FAVE project was built as part of the Cloud Computing course at Politecnico di Milano. See FINAL_REPORT.md for the full narrative and references.
+3.  **Analyze Results**:
+    ```bash
+    python3 scripts/final_analysis.py
+    ```
 
-  Enjoy exploring video workloads on FaaS—and feel free to extend the pipeline, tweak sampling rates, or port it onto other serverless platforms.
+---
+
+## Key Results
+
+| Regime | Pattern | Latency (P50) | Notes |
+|--------|---------|---------------|-------|
+| Warm   | Baseline| ~8.8 s        | Full pipeline success |
+| Cold   | Burst   | >22.0 s       | Heavy initialization penalty |
+
+See `FINAL_REPORT.md` for detailed graphs and findings.
+
+---
+
+## Troubleshooting
+
+- **500 Internal Server Error**: Often due to timeouts on the gateway. The default is 60s, which is short for video processing.
+- **ImagePullBackOff**: Ensure you've built the images locally (`faas-cli build`) and that your Kubernetes cluster can see them (Docker Desktop shares the image cache automatically).
+- **"Community Edition" Error**: Use the **Option A** deployment method (manual manifests) to bypass registry checks.
+
+---
+
+## License
+
+This project is part of the Cloud Computing course at Politecnico di Milano.

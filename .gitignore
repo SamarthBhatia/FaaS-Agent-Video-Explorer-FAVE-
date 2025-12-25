@@ -7,3 +7,22 @@ Code 2/
 Code 3/
 Code 4/
 VideoSearcher-src/
+
+# Artifacts & Binaries
+arkade-*
+build/
+secrets/
+*.mp4
+*.tar.gz
+*.wav
+*.jpg
+index.py
+
+# Runtime Data
+nats/
+prometheus/
+minio_data/
+
+# Python
+__pycache__/
+*.pyc
