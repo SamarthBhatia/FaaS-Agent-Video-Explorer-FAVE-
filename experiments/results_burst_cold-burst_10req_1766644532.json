@@ -1,0 +1,96 @@
+[
+  {
+    "timestamp": "2025-12-25T12:04:51.602216",
+    "duration_ms": 40867,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.602973",
+    "duration_ms": 35379,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.603338",
+    "duration_ms": 20587,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "5ee249d7-8099-4089-bebf-f74e33a863ba",
+      "message": "Failed to upload /tmp/json-10.tmp to fave-artifacts/requests/5ee249d7-8099-4089-bebf-f74e33a863ba/metadata/state.json: An error occurred (BadDigest) when calling the PutObject operation (reached max retries: 4): The Content-Md5 you specified did not match what we received."
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.603531",
+    "duration_ms": 18888,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.603712",
+    "duration_ms": 14347,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.603925",
+    "duration_ms": 14427,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.604284",
+    "duration_ms": 40843,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.604411",
+    "duration_ms": 24346,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "767934e3-06ee-4735-923d-a882b7d8adb5",
+      "message": "Failed to upload /tmp/json-10.tmp to fave-artifacts/requests/767934e3-06ee-4735-923d-a882b7d8adb5/metadata/state.json: An error occurred (BadDigest) when calling the PutObject operation (reached max retries: 4): The Content-Md5 you specified did not match what we received."
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.604523",
+    "duration_ms": 14312,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-burst"
+  },
+  {
+    "timestamp": "2025-12-25T12:04:51.605029",
+    "duration_ms": 40843,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-burst"
+  }
+]

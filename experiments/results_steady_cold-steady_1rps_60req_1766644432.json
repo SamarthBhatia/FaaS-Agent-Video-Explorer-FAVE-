@@ -1,0 +1,552 @@
+[
+  {
+    "timestamp": "2025-12-25T12:02:25.154161",
+    "duration_ms": 10363,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:26.156832",
+    "duration_ms": 36119,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:27.159785",
+    "duration_ms": 8358,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:28.162794",
+    "duration_ms": 34115,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:29.162148",
+    "duration_ms": 33101,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:30.156851",
+    "duration_ms": 32051,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:31.158803",
+    "duration_ms": 31049,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:32.157461",
+    "duration_ms": 30107,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:33.158658",
+    "duration_ms": 30205,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:34.156741",
+    "duration_ms": 30068,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:35.156297",
+    "duration_ms": 30164,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:36.157643",
+    "duration_ms": 30036,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:37.155989",
+    "duration_ms": 30048,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:38.158337",
+    "duration_ms": 30088,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:39.162643",
+    "duration_ms": 30118,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:40.160600",
+    "duration_ms": 30182,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:41.159473",
+    "duration_ms": 30100,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:42.162197",
+    "duration_ms": 30149,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:43.158918",
+    "duration_ms": 30129,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:44.159582",
+    "duration_ms": 30123,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:45.160451",
+    "duration_ms": 30198,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:46.157069",
+    "duration_ms": 30156,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:47.156901",
+    "duration_ms": 30129,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:48.156455",
+    "duration_ms": 30166,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:49.159184",
+    "duration_ms": 1696,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "ffe11a19-9773-4493-8e18-b3173605ed52",
+      "message": "[Errno 2] No such file or directory: '/tmp/json-10.tmp'"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:50.157273",
+    "duration_ms": 30195,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:51.154466",
+    "duration_ms": 30223,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:52.156710",
+    "duration_ms": 30098,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:53.158386",
+    "duration_ms": 30156,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:54.157963",
+    "duration_ms": 30094,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:55.160347",
+    "duration_ms": 30051,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:56.160493",
+    "duration_ms": 30227,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:57.158765",
+    "duration_ms": 30107,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:58.157057",
+    "duration_ms": 30216,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:02:59.157551",
+    "duration_ms": 8560,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:00.164208",
+    "duration_ms": 30221,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:01.156784",
+    "duration_ms": 30159,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:02.160768",
+    "duration_ms": 6405,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "9da50ace-6748-4b60-bd61-9f668417be71",
+      "message": "[Errno 2] No such file or directory: '/tmp/json-10.tmp'"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:03.161854",
+    "duration_ms": 30181,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:04.155949",
+    "duration_ms": 30164,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:05.156806",
+    "duration_ms": 19509,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:06.158177",
+    "duration_ms": 17640,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:07.156953",
+    "duration_ms": 30082,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:08.154282",
+    "duration_ms": 16610,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:09.160024",
+    "duration_ms": 30143,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:10.157219",
+    "duration_ms": 30135,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:11.156119",
+    "duration_ms": 24237,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "03ad3379-d75d-40e0-9f09-6d1a414549de",
+      "message": "Failed to upload /tmp/json-10.tmp to fave-artifacts/requests/03ad3379-d75d-40e0-9f09-6d1a414549de/metadata/state.json: An error occurred (BadDigest) when calling the PutObject operation (reached max retries: 4): The Content-Md5 you specified did not match what we received."
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:12.156165",
+    "duration_ms": 12731,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "05d22818-3369-42f4-94be-df2a2fbd40d5",
+      "message": "[Errno 2] No such file or directory: '/tmp/json-10.tmp'"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:13.157853",
+    "duration_ms": 19641,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:14.158865",
+    "duration_ms": 9977,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:15.159293",
+    "duration_ms": 24515,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "537dff96-f0b2-43c9-a8d1-bbe50e6a1c6a",
+      "message": "[Errno 2] No such file or directory: '/tmp/json-10.tmp'"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:16.159461",
+    "duration_ms": 12747,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:17.155471",
+    "duration_ms": 6960,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:18.155616",
+    "duration_ms": 30113,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:19.155959",
+    "duration_ms": 5602,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:20.159655",
+    "duration_ms": 4008,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:21.155608",
+    "duration_ms": 3602,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:22.157348",
+    "duration_ms": 30188,
+    "status": "failure",
+    "response": {
+      "error": "Server error '504 Gateway Timeout' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:23.157462",
+    "duration_ms": 1010,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  },
+  {
+    "timestamp": "2025-12-25T12:03:24.162207",
+    "duration_ms": 528,
+    "status": "failure",
+    "response": {
+      "error": "Server error '500 Internal Server Error' for url 'http://localhost:8080/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "cold-steady"
+  }
+]
