@@ -25,4 +25,4 @@ minio_data/
 
 # Python
 __pycache__/
-*.pyc
+*.pycGEMINI.md
