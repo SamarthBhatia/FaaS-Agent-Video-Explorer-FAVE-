@@ -1,0 +1,13 @@
+[
+  {
+    "timestamp": "2025-12-25T11:32:51.012439",
+    "duration_ms": 11379,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "442174d7-eee7-4938-9ecb-0bc259554ab8",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "full-real-audio-attempt7"
+  }
+]

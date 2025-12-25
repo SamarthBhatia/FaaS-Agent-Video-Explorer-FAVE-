@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    com.openfaas.scale.max: '5'
+    com.openfaas.scale.min: '0'
+    faas_function: stage-object-detector
+  name: stage-object-detector
+  namespace: openfaas-fn
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: stage-object-detector
+  template:
+    metadata:
+      labels:
+        app: stage-object-detector
+        faas_function: stage-object-detector
+    spec:
+      containers:
+      - env:
+        - name: fprocess
+          value: python3 index.py
+        - name: mode
+          value: http
+        - name: http_upstream_url
+          value: http://127.0.0.1:5000
+        - name: ARTIFACT_BUCKET
+          value: fave-artifacts
+        - name: ARTIFACT_ENDPOINT
+          value: http://minio.default:9000
+        - name: ARTIFACT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: artifact-access-key
+              name: artifact-access-key
+        - name: ARTIFACT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: artifact-secret-key
+              name: artifact-secret-key
+        image: fave-stage-object-detector:dev
+        imagePullPolicy: IfNotPresent
+        name: stage-object-detector
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    faas_function: stage-object-detector
+  name: stage-object-detector
+  namespace: openfaas-fn
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: stage-object-detector

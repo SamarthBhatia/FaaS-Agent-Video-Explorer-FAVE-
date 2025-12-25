@@ -1,0 +1,57 @@
+[
+  {
+    "timestamp": "2025-12-25T11:13:53.726515",
+    "duration_ms": 3755,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "0d407561-654a-4371-8c86-a4321915f5ad",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-0'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "steady-baseline"
+  },
+  {
+    "timestamp": "2025-12-25T11:13:55.734515",
+    "duration_ms": 2935,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "b06721bd-46c8-483d-8c77-ff93a8f3553f",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-0'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "steady-baseline"
+  },
+  {
+    "timestamp": "2025-12-25T11:13:57.726896",
+    "duration_ms": 1662,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "8dcedc5f-4894-4e57-be2e-3aec99fcf447",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-0'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "steady-baseline"
+  },
+  {
+    "timestamp": "2025-12-25T11:13:59.728522",
+    "duration_ms": 487,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "efacfc89-667e-42c4-9c10-82b97a61a2c7",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-0'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "steady-baseline"
+  },
+  {
+    "timestamp": "2025-12-25T11:14:01.732815",
+    "duration_ms": 423,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "87544c53-93cb-4192-8198-fc2d4f03f677",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-0'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "steady-baseline"
+  }
+]

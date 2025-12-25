@@ -1,0 +1,151 @@
+[
+  {
+    "timestamp": "2025-12-25T11:34:27.031847",
+    "duration_ms": 9405,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "006ac308-f859-4d94-b732-f91a1c90e89f",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/006ac308-f859-4d94-b732-f91a1c90e89f/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1102,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.551,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/006ac308-f859-4d94-b732-f91a1c90e89f/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1122,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.561,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/006ac308-f859-4d94-b732-f91a1c90e89f/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 334,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.167,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/006ac308-f859-4d94-b732-f91a1c90e89f/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/006ac308-f859-4d94-b732-f91a1c90e89f/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 4115,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 2.0575,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/006ac308-f859-4d94-b732-f91a1c90e89f/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 695,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 0.3475,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [],
+                "metrics": {
+                  "duration_ms": 1126,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 0.563,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "skipped",
+                "message": "Object detector disabled for clip 0",
+                "outputs": [],
+                "metrics": {
+                  "duration_ms": 0,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.0,
+                  "extra": {}
+                },
+                "clip_index": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "full-real-audio-attempt8"
+  }
+]

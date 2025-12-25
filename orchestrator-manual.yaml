@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    com.openfaas.scale.max: '5'
+    com.openfaas.scale.min: '0'
+    faas_function: orchestrator
+  name: orchestrator
+  namespace: openfaas-fn
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: orchestrator
+  template:
+    metadata:
+      labels:
+        app: orchestrator
+        faas_function: orchestrator
+    spec:
+      containers:
+      - env:
+        - name: fprocess
+          value: python3 index.py
+        - name: mode
+          value: http
+        - name: http_upstream_url
+          value: http://127.0.0.1:5000
+        - name: ARTIFACT_BUCKET
+          value: fave-artifacts
+        - name: ARTIFACT_ENDPOINT
+          value: http://minio.default:9000
+        - name: ARTIFACT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: artifact-access-key
+              name: artifact-access-key
+        - name: ARTIFACT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: artifact-secret-key
+              name: artifact-secret-key
+        - name: ENABLE_OBJECT_DETECTOR
+          value: "true"
+
+        image: fave-orchestrator:dev
+        imagePullPolicy: IfNotPresent
+        name: orchestrator
+        ports:
+        - containerPort: 8080
