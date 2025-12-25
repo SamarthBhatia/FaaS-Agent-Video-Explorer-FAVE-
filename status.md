@@ -2,7 +2,7 @@
 
 ## Summary
 - **Date**: 2025-12-25
-- **Current Phase**: Remediation & Re-verification
+- **Current Phase**: Remediation & Verification (Completed)
 - **Upcoming Phase**: Final Report Update
 
 ## Task List
@@ -23,25 +23,26 @@
 - [x] Initial Analysis & Reporting (`FINAL_REPORT.md`).
 - [x] **Mitigation**: Increase function timeouts to 300s (Manifests updated).
 - [x] **Mitigation**: Add retry logic to workload generator.
+- [x] **Mitigation**: Fix Gateway discovery using Function CRD (`manifests/orchestrator-crd.yaml`).
+- [x] **Re-run Experiment**: `warm-steady` with high concurrency (verified timeouts > 30s work).
 
-### Remaining / Blocked
-- [ ] **Mitigation**: Update OpenFaaS Helm release for global timeouts (Blocked: No `helm`).
-- [ ] Re-run `warm-steady` experiment (Blocked: No Cluster Access).
-- [ ] Re-run `cold-burst` experiment (Blocked: No Cluster Access).
-- [ ] Update Final Report with new data.
+### Remaining
+- [ ] Investigate S3 `BadDigest` and `No such file` errors under high concurrency (Race conditions in Orchestrator?).
+- [ ] Update `FINAL_REPORT.md` with new findings.
 
 ## Session Log
 
-### 2025-12-25
-- **Goal**: Apply mitigations (timeouts, retries) and re-run experiments to address failures identified in the final report.
+### 2025-12-25 (Session 2)
+- **Goal**: Apply mitigations (timeouts, retries) and re-run experiments.
 - **Actions**:
-    - Updated all `manifests/*-manual.yaml` files. Added `read_timeout`, `write_timeout`, `upstream_timeout`, and `exec_timeout` set to `300s` to prevent premature termination during long processing.
-    - Updated `scripts/workload_generator.py` to include a retry loop (3 retries, exponential backoff) for HTTP 500/502/504 errors, improving robustness against transient gateway failures.
-    - Attempted to verify cluster access via `kubectl` but failed (EOF). Cannot deploy new manifests or run experiments in the current environment.
-    - Attempted to check `helm` for OpenFaaS config update but `helm` is not installed.
-- **Outcome**: Mitigations applied to code/manifests. Execution blocked by environment limitations.
-
-## Previous Findings (Legacy)
-- **Cold Start Penalty**: >15 seconds.
-- **Stability**: Default FaaS timeouts insufficient.
-- **Race Conditions**: Parallel orchestrators revealed vulnerabilities.
+    - Updated all `manifests/*-manual.yaml` files with 300s timeouts.
+    - Updated `scripts/workload_generator.py` with retry logic.
+    - Patched OpenFaaS Gateway and Queue Worker to 300s timeouts.
+    - **Debugged Gateway 404s**: Discovered that `direct_functions` bypass was failing in Gateway 0.27.10.
+    - **Solution**: Created `manifests/orchestrator-crd.yaml` to register the function with `faas-netes` provider using `fprocess` wrapper for secret injection (bypassing the need for `valueFrom` which CRDs lack).
+    - Executed `warm-verify` (1 req) successfully (34s duration).
+    - Executed `warm-steady` (20 reqs, 1.0 RPS).
+- **Results**:
+    - **Success**: Functions no longer timeout at 20s. Long-running requests (up to ~315s) completed.
+    - **New Issues**: High concurrency caused S3 upload errors (`BadDigest`) and local file race conditions (`/tmp/json-XX.tmp`), likely due to thread-safety issues in the Orchestrator's temp file handling.
+    - **Conclusion**: Timeouts are fixed. Concurrency stability needs work.

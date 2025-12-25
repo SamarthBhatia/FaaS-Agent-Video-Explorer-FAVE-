@@ -1,0 +1,25 @@
+apiVersion: openfaas.com/v1
+kind: Function
+metadata:
+  name: orchestrator
+  namespace: openfaas-fn
+spec:
+  name: orchestrator
+  image: fave-orchestrator:dev
+  secrets:
+    - artifact-access-key
+    - artifact-secret-key
+  labels:
+    com.openfaas.scale.min: "1"
+    com.openfaas.scale.max: "5"
+  environment:
+    read_timeout: "300s"
+    write_timeout: "300s"
+    upstream_timeout: "300s"
+    exec_timeout: "300s"
+    mode: "http"
+    http_upstream_url: "http://127.0.0.1:5000"
+    ARTIFACT_BUCKET: "fave-artifacts"
+    ARTIFACT_ENDPOINT: "http://minio.default:9000"
+    ENABLE_OBJECT_DETECTOR: "true"
+    fprocess: 'bash -c "export ARTIFACT_ACCESS_KEY=$(cat /var/secrets/artifact-access-key); export ARTIFACT_SECRET_KEY=$(cat /var/secrets/artifact-secret-key); python3 index.py"'
