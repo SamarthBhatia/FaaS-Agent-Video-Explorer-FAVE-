@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import io
 from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Tuple
@@ -120,13 +121,10 @@ def read_json(uri: str) -> Dict:
 
 def write_json(data: Dict, uri: str) -> str:
     """Serialize data as JSON and upload."""
-    tmp_path = Path("/tmp") / f"json-{os.getpid()}.tmp"
-    tmp_path.write_text(json.dumps(data, indent=2))
-    try:
-        return upload_file(tmp_path, uri, extra_args={"ContentType": "application/json"})
-    finally:
-        if tmp_path.exists():
-            tmp_path.unlink()
+    bucket, key = _parse_s3_uri(uri)
+    buf = io.BytesIO(json.dumps(data, indent=2).encode("utf-8"))
+    _s3_client().upload_fileobj(buf, bucket, key, ExtraArgs={"ContentType": "application/json"})
+    return f"s3://{bucket}/{key}"
 
 
 def copy_object(source_uri: str, dest_uri: str) -> str:

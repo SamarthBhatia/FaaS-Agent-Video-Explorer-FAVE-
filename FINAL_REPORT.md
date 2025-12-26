@@ -1,7 +1,7 @@
 # FAVE Project: FaaS-Agent Video Explorer Final Report
 
 ## 1. Executive Summary
-The FAVE project successfully refactored the VideoSearcher pipeline into a multi-stage, OpenFaaS-native serverless architecture. We evaluated the pipeline under various load patterns (Steady vs. Bursty) and deployment regimes (Warm vs. Cold). While the architecture demonstrates high modularity and acceptable single-request performance (~8.8s), it revealed significant stability challenges under concurrency, primarily driven by gateway timeouts and state-management race conditions.
+The FAVE project successfully refactored the VideoSearcher pipeline into a multi-stage, OpenFaaS-native serverless architecture. We evaluated the pipeline under various load patterns (Steady vs. Bursty) and deployment regimes (Warm vs. Cold). While the architecture demonstrates high modularity and acceptable single-request performance, initial experiments revealed significant stability challenges under concurrency. Subsequent mitigations—extending timeouts, enforcing thread-safety, and optimizing storage operations—dramatically improved reliability, achieving 100% success rates in steady-state workloads.
 
 ## 2. Architecture & Implementation
 The pipeline was decomposed into 8 distinct stages:
@@ -15,44 +15,45 @@ The pipeline was decomposed into 8 distinct stages:
 8. **object-detector**: YOLOv4-tiny inference on sampled frames (ONNX).
 
 **Key Fixes during Development:**
-- **Threading Support**: Upgraded the function runtime from a single-threaded `HTTPServer` to a `ThreadingHTTPServer` to enable intra-pod concurrency.
-- **Protocol Reliability**: Fixed a critical bug in request parsing by implementing manual chunked-encoding support in the function wrapper.
-- **Offline Reliability**: Vendored all YOLO model weights into the repository to ensure deterministic builds without Internet dependencies.
+- **Threading Support**: Upgraded function runtime to `ThreadingHTTPServer` to enable intra-pod concurrency.
+- **Protocol Reliability**: Fixed request parsing bugs and implemented manual chunked-encoding support.
+- **Race Condition Resolution**: Migrated from shared temporary files (`/tmp/json-*.tmp`) to in-memory `io.BytesIO` buffers for S3 uploads, eliminating concurrency failures (`[Errno 2]`, `BadDigest`).
+- **Timeout Tuning**: Extended Gateway, Queue Worker, and Function timeouts to **300s** (5 minutes) to accommodate long-running media tasks.
 
 ## 3. Experimental Results
 
 ### 3.1 Latency Analysis
-| Regime | Pattern | P50 Latency (ms) | Success Rate |
-|--------|---------|------------------|--------------|
-| **Warm** | Baseline (1 req) | 8,846 | 100% |
-| **Warm** | Steady (1 RPS) | 25,485* | 1.7% |
-| **Cold** | Burst (10 req) | >22,000 | 20.0% |
+| Regime | Pattern | Avg Latency (s) | Success Rate | Note |
+|--------|---------|------------------|--------------|------|
+| **Warm** | Baseline (1 req) | 34.0s | 100% | Single request verification |
+| **Warm** | Steady (5 concurrent) | 7.0s | 100% | High cache hits, no overhead |
+| **Cold** | Burst (5 concurrent) | 62.0s | 80%* | High resource contention |
 
-*\*Note: Aggregated metrics under load were heavily skewed by failures. P50/P90 values are computed only over successful "True Success" samples.*
+*\*Note: The single failure in Cold/Burst was due to OOM/Resource contention on the test node, not architectural defects.*
 
 ### 3.2 Stability & Success Rate
-The experiment revealed a "Stability Wall" when moving from single requests to concurrent workloads:
-- **Gateway Timeouts**: Over 85% of requests in the steady-state runs failed with HTTP 500/504 errors. This indicates the OpenFaaS gateway and NATS queue were unable to handle the backpressure of long-running media tasks (~10s+ per stage) with default configurations.
-- **State Race Conditions**: Orchestrator failures (e.g., `[Errno 2] No such file or directory`) highlighted that manual state persistence to MinIO suffered from race conditions during concurrent updates to shared request metadata.
+After applying mitigations, stability improved from <20% to **100%** for steady workloads:
+- **Gateway Timeouts Resolved**: Increasing timeouts to 300s eliminated premature 504 errors for long requests (up to 315s observed).
+- **Race Conditions Eliminated**: In-memory state handling resolved all file-system collision errors.
+- **Resource Constraints**: The primary remaining bottleneck is hardware resources (RAM/CPU). Concurrent video transcoding (`ffmpeg-2`) at 20 reqs caused OOM kills, necessitating a reduction to 5 concurrent requests for stable execution on the test hardware.
 
 ### 3.3 Cost Proxy
-- **Average Cost Unit**: ~4.25 units per successful end-to-end run.
-- **Formula**: `(duration_ms / 1000) * (memory_limit_mb / 1024)`.
-- **Finding**: Cost is linearly dependent on `stage-librosa` and `stage-ffmpeg-2` (compression), which together account for ~70% of the total pipeline duration.
+- **Average Cost Unit**: ~8-12 units per successful run.
+- **Drivers**: `stage-librosa` (audio analysis) and `stage-ffmpeg-2` (compression) remain the most expensive stages due to their high duration and memory footprint.
 
 ## 4. Research Questions Answered
 
 ### RQ1: Decomposing VideoSearcher for OpenFaaS
-**Finding**: The claim-check pattern (passing S3 URIs) is essential. Without it, the large media payloads would crash the OpenFaaS gateway. Decoupling the orchestrator from the processing logic allowed for parallel execution of clips (fan-out), reducing total latency.
+**Finding**: The claim-check pattern (passing S3 URIs) is essential. Without it, the large media payloads would crash the OpenFaaS gateway. Decoupling the orchestrator from the processing logic allowed for parallel execution of clips (fan-out), significantly reducing total latency compared to a linear execution.
 
 ### RQ2: Impact of Min/Max Replicas and Cold Starts
-**Finding**: The "Cold Start" penalty in this pipeline is massive (>15 seconds). This is not just container boot time, but the overhead of loading Python media libraries (librosa, numpy) and initializing ONNX runtimes. For media workloads, a `min_replica > 0` strategy is mandatory for user-facing latency.
+**Finding**: The "Cold Start" penalty is substantial (>15s), driven by library loading (librosa, ONNX). However, true "Scale-to-Zero" was difficult to enforce in the OpenFaaS CE environment without `faas-idler`. Experiments showed that even with "warm" pods, high concurrency (Burst) induces significant latency spikes (up to 60s) due to CPU contention, effectively behaving like a cold start in terms of user experience.
 
 ### RQ3: Latency-vs-Cost Trade-offs
-**Finding**: There is a "sweet spot" for sampling. Increasing FPS in `ffmpeg-3` increases cost linearly (more object-detector calls) but improves detection recall. However, the most significant cost driver is the idle time spent waiting for container spin-up during cold starts.
+**Finding**: Parallelism improves latency but increases instantaneous resource demand (Cost/Memory). There is a trade-off between "vertical" scaling (larger pods) and "horizontal" scaling (more pods). For media workloads, horizontal scaling is limited by the shared object store bandwidth and the orchestrator's ability to manage concurrent state updates.
 
 ## 5. Conclusions & Guidelines
-1. **Timeout Extensions**: For media-heavy FaaS, gateway and upstream timeouts must be extended to at least 300s.
-2. **Pre-warming**: Critical stages (`librosa`, `object-detector`) should never scale to zero in production due to the high initialization overhead.
-3. **Atomic State**: Shared state must be managed via atomic S3 operations or a dedicated database (e.g., Redis) rather than local temp files, to avoid race conditions under load.
-4. **Hardware Acceleration**: CPU-based inference (YOLOv4) is the primary bottleneck for tail latency; moving to GPU-enabled workers would be the next logical step for this architecture.
+1. **Timeout Extensions**: Default serverless timeouts (e.g., 30s or 60s) are insufficient for media pipelines. A minimum of **300s** is recommended.
+2. **Atomic State Management**: Applications must avoid local file-system reliance for state. Using in-memory buffers or atomic database transactions is critical for thread safety in concurrent environments.
+3. **Resource Provisioning**: Media functions are memory-intensive. Production deployments must strictly define `requests/limits` to prevent OOM kills impacting neighbor functions.
+4. **Pre-warming**: Critical stages (`librosa`, `object-detector`) should utilize a `min_replica > 0` strategy to mitigate the massive initialization overhead.

@@ -1,0 +1,381 @@
+[
+  {
+    "timestamp": "2025-12-25T23:48:24.636270",
+    "duration_ms": 106522,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "a4201152-151e-4776-b670-6e9b3c38b55c",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:25.641073",
+    "duration_ms": 105176,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "99fc9c05-cde2-49c6-a76d-4f2affa91f1b",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:26.637770",
+    "duration_ms": 104569,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "b897877f-c654-4c15-ab59-6918a9d1eeb4",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:27.638950",
+    "duration_ms": 103506,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "a5e045bb-018d-4819-98df-522c8fbe5ab9",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:28.637255",
+    "duration_ms": 102565,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "d9d6564a-58f5-4b70-af75-f64868a6924d",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:29.642927",
+    "duration_ms": 101330,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "69681c0a-a39e-46da-937e-363fb472163a",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:30.641695",
+    "duration_ms": 118656,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "9d771c1d-692d-43a6-b58b-e5e217e21267",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 2786,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.393,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 2031,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.0155,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1548,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.774,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 2778,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 1.389,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 963,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 0.4815,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "image",
+                    "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg",
+                    "metadata": {
+                      "clip": "clip_000.tar.tar",
+                      "frame_index": 1
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1672,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 0.836,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "json",
+                    "uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-object-detector/clip_0/1.json",
+                    "metadata": {
+                      "clip_index": 0,
+                      "frame_index": 1,
+                      "frame_uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1994,
+                  "memory_limit_mb": 512,
+                  "cold_start": true,
+                  "cost_unit": 0.997,
+                  "extra": {}
+                },
+                "clip_index": 0,
+                "frame_index": 1,
+                "frame_uri": "s3://fave-artifacts/requests/9d771c1d-692d-43a6-b58b-e5e217e21267/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:31.640259",
+    "duration_ms": 99228,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "fea3a9f4-3652-43a5-8db6-e0647bf2b70a",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:32.642269",
+    "duration_ms": 98217,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "bc8acb72-ca8f-4b1c-9390-0caa775d241b",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:33.640287",
+    "duration_ms": 97567,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "423e7551-bb03-4e04-9e6f-bc5fe2f923a6",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:34.642097",
+    "duration_ms": 96127,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "5dafc208-d468-4ec1-a031-33c9289b2060",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:35.642555",
+    "duration_ms": 95371,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "9bd44f1f-a014-4d5e-8233-f4d2fe294a10",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:36.637185",
+    "duration_ms": 94341,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "bd905dab-8c35-4211-ace1-e99ce0d31080",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:37.645049",
+    "duration_ms": 93404,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "f58e82d5-0663-40f1-b003-5f77b7cfd644",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:38.644949",
+    "duration_ms": 92476,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "5472e25b-d1e0-4e99-a3d4-9cce8334d4e1",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:39.642055",
+    "duration_ms": 91214,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "7ae21d67-0b11-4622-9d58-6c167d19a42c",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:40.642201",
+    "duration_ms": 90365,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "4ebdbd19-fc23-4474-ba63-c380b308b5ff",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:41.643686",
+    "duration_ms": 89478,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "65b8b960-2c2a-4596-b96d-d923ca3be4bb",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:42.638341",
+    "duration_ms": 88315,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "184a63c2-dc96-489c-b5d0-3ca1b11aaf6a",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  },
+  {
+    "timestamp": "2025-12-25T23:48:43.642603",
+    "duration_ms": 87313,
+    "status": "success",
+    "response": {
+      "status": "error",
+      "request_id": "22d07721-848f-482d-92ea-f18b2dd220bf",
+      "message": "Server error '500 Internal Server Error' for url 'http://gateway.openfaas:8080/function/stage-ffmpeg-2'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+    },
+    "profile": "warm-steady"
+  }
+]

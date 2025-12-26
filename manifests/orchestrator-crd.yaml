@@ -10,13 +10,14 @@ spec:
     - artifact-access-key
     - artifact-secret-key
   labels:
-    com.openfaas.scale.min: "1"
+    com.openfaas.scale.min: "0"
     com.openfaas.scale.max: "5"
   environment:
     read_timeout: "300s"
     write_timeout: "300s"
     upstream_timeout: "300s"
     exec_timeout: "300s"
+    max_inflight: "50"
     mode: "http"
     http_upstream_url: "http://127.0.0.1:5000"
     ARTIFACT_BUCKET: "fave-artifacts"
