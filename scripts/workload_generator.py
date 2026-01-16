@@ -1,23 +1,31 @@
 import argparse
 import json
+import logging
 import time
-import uuid
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import httpx
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
+
 class WorkloadGenerator:
-    def __init__(self, gateway_url: str, output_dir: Path):
+    def __init__(self, gateway_url: str, output_dir: Path) -> None:
         self.gateway_url = gateway_url.rstrip("/")
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.client = httpx.Client(timeout=None)
 
-    def invoke_orchestrator(self, video_uri: str, profile: str = "default", semaphore: threading.Semaphore = None) -> Dict[str, Any]:
+    def invoke_orchestrator(self, video_uri: str, profile: str = "default", semaphore: Optional[threading.Semaphore] = None) -> Dict[str, Any]:
         # Note: Semaphore is acquired by the producer loop before calling this
         url = f"{self.gateway_url}/function/orchestrator"
         payload = {
@@ -28,7 +36,7 @@ class WorkloadGenerator:
         start_time = time.perf_counter()
         timestamp = datetime.now().isoformat()
         
-        data = {}
+        data: Dict[str, Any] = {}
         status = "failure"
         max_retries = 3
         
@@ -44,7 +52,7 @@ class WorkloadGenerator:
                 except httpx.HTTPStatusError as e:
                     # Retry on 500, 502, 504
                     if e.response.status_code in [500, 502, 504]:
-                        print(f"Attempt {attempt+1}/{max_retries} failed with status {e.response.status_code}. Retrying...")
+                        logger.warning(f"Attempt {attempt+1}/{max_retries} failed with status {e.response.status_code}. Retrying...")
                         if attempt < max_retries - 1:
                             time.sleep(2 * (attempt + 1))
                         else:
@@ -52,13 +60,14 @@ class WorkloadGenerator:
                     else:
                         raise e
                 except (httpx.RequestError, httpx.TimeoutException) as e:
-                     print(f"Attempt {attempt+1}/{max_retries} failed with error: {e}. Retrying...")
+                     logger.warning(f"Attempt {attempt+1}/{max_retries} failed with error: {e}. Retrying...")
                      if attempt < max_retries - 1:
                         time.sleep(2 * (attempt + 1))
                      else:
                         data = {"error": str(e)}
 
         except Exception as e:
+            logger.error(f"Invocation failed: {e}")
             data = {"error": str(e)}
             status = "failure"
         finally:
@@ -75,9 +84,9 @@ class WorkloadGenerator:
             "profile": profile
         }
 
-    def run_steady(self, video_uri: str, total_requests: int, rps: float, profile: str, concurrency: int):
-        print(f"Running steady workload: {total_requests} requests at {rps} RPS (profile: {profile}, max_concurrency: {concurrency})")
-        results = []
+    def run_steady(self, video_uri: str, total_requests: int, rps: float, profile: str, concurrency: int) -> None:
+        logger.info(f"Running steady workload: {total_requests} requests at {rps} RPS (profile: {profile}, max_concurrency: {concurrency})")
+        results: List[Dict[str, Any]] = []
         interval = 1.0 / rps if rps > 0 else 0
         semaphore = threading.Semaphore(concurrency)
         
@@ -100,9 +109,9 @@ class WorkloadGenerator:
         
         self.save_results(results, f"steady_{profile}_{int(rps)}rps_{total_requests}req")
 
-    def run_burst(self, video_uri: str, burst_size: int, profile: str):
-        print(f"Running burst workload: {burst_size} concurrent requests (profile: {profile})")
-        results = []
+    def run_burst(self, video_uri: str, burst_size: int, profile: str) -> None:
+        logger.info(f"Running burst workload: {burst_size} concurrent requests (profile: {profile})")
+        results: List[Dict[str, Any]] = []
         
         with ThreadPoolExecutor(max_workers=burst_size) as executor:
             futures = [executor.submit(self.invoke_orchestrator, video_uri, profile) for _ in range(burst_size)]
@@ -111,22 +120,22 @@ class WorkloadGenerator:
         
         self.save_results(results, f"burst_{profile}_{burst_size}req")
 
-    def save_results(self, results: List[Dict[str, Any]], name: str):
+    def save_results(self, results: List[Dict[str, Any]], name: str) -> None:
         filename = self.output_dir / f"results_{name}_{int(time.time())}.json"
         with open(filename, "w") as f:
             json.dump(results, f, indent=2)
-        print(f"Results saved to {filename}")
+        logger.info(f"Results saved to {filename}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="FAVE Workload Generator")
-    parser.add_argument("--gateway", default="http://localhost:8080", help="OpenFaaS gateway URL")
-    parser.add_argument("--video", required=True, help="Input video URI/URL")
-    parser.add_argument("--pattern", choices=["steady", "burst"], default="steady", help="Workload pattern")
-    parser.add_argument("--requests", type=int, default=1, help="Total requests for steady or burst size")
-    parser.add_argument("--rps", type=float, default=1.0, help="Requests per second for steady pattern")
-    parser.add_argument("--concurrency", type=int, default=50, help="Max concurrent requests for steady workload")
-    parser.add_argument("--profile", default="default", help="Configuration profile (e.g., cold, warm)")
-    parser.add_argument("--output", default="experiments", help="Output directory for results")
+    parser = argparse.ArgumentParser(description="FAVE Workload Generator - Simulates steady or bursty traffic to the FaaS pipeline.")
+    parser.add_argument("--gateway", default="http://localhost:8080", help="URL of the OpenFaaS gateway (default: http://localhost:8080)")
+    parser.add_argument("--video", required=True, help="URI/URL of the input video to process")
+    parser.add_argument("--pattern", choices=["steady", "burst"], default="steady", help="Traffic pattern: 'steady' (constant RPS) or 'burst' (all at once)")
+    parser.add_argument("--requests", type=int, default=1, help="Total number of requests (for steady) or burst size (for burst)")
+    parser.add_argument("--rps", type=float, default=1.0, help="Requests per second (only for steady pattern)")
+    parser.add_argument("--concurrency", type=int, default=50, help="Maximum concurrent requests allowed (only for steady pattern)")
+    parser.add_argument("--profile", default="default", help="Configuration profile passed to the orchestrator (e.g., 'cold', 'warm', 'default')")
+    parser.add_argument("--output", default="experiments", help="Directory to save JSON result files (default: experiments)")
     
     args = parser.parse_args()
     
