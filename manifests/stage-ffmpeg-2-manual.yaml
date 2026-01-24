@@ -22,6 +22,8 @@ spec:
       - env:
         - name: fprocess
           value: python3 index.py
+        - name: max_inflight
+          value: "50"
         - name: read_timeout
           value: "300s"
         - name: write_timeout

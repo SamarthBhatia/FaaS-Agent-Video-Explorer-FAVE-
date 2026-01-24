@@ -1,0 +1,852 @@
+[
+  {
+    "timestamp": "2026-01-24T17:21:13.258069",
+    "duration_ms": 25985,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 3733,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.8665,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1611,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.8055,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1104,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.552,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 13217,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 6.6085,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 235,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.1175,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "image",
+                    "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg",
+                    "metadata": {
+                      "clip": "clip_000.tar.tar",
+                      "frame_index": 1
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 873,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.4365,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "json",
+                    "uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-object-detector/clip_0/1.json",
+                    "metadata": {
+                      "clip_index": 0,
+                      "frame_index": 1,
+                      "frame_uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1090,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.545,
+                  "extra": {}
+                },
+                "clip_index": 0,
+                "frame_index": 1,
+                "frame_uri": "s3://fave-artifacts/requests/9a0bc4cc-ae46-4f87-9b72-62bdfc948ee2/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "warm-steady-5concurrent"
+  },
+  {
+    "timestamp": "2026-01-24T17:21:13.258417",
+    "duration_ms": 25985,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "068fa0be-2e65-4b8c-8ddb-98ea99c22c19",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 3774,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.887,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1654,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.827,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1091,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.5455,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 13169,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 6.5845,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 247,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.1235,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "image",
+                    "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg",
+                    "metadata": {
+                      "clip": "clip_000.tar.tar",
+                      "frame_index": 1
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 886,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.443,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "json",
+                    "uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-object-detector/clip_0/1.json",
+                    "metadata": {
+                      "clip_index": 0,
+                      "frame_index": 1,
+                      "frame_uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1112,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.556,
+                  "extra": {}
+                },
+                "clip_index": 0,
+                "frame_index": 1,
+                "frame_uri": "s3://fave-artifacts/requests/068fa0be-2e65-4b8c-8ddb-98ea99c22c19/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "warm-steady-5concurrent"
+  },
+  {
+    "timestamp": "2026-01-24T17:21:13.258615",
+    "duration_ms": 25985,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "421de6c5-edc0-4bee-a38b-1d08d31535a0",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 3689,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.8445,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1636,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.818,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1088,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.544,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 13289,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 6.6445,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 266,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.133,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "image",
+                    "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg",
+                    "metadata": {
+                      "clip": "clip_000.tar.tar",
+                      "frame_index": 1
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 795,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.3975,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "json",
+                    "uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-object-detector/clip_0/1.json",
+                    "metadata": {
+                      "clip_index": 0,
+                      "frame_index": 1,
+                      "frame_uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1156,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.578,
+                  "extra": {}
+                },
+                "clip_index": 0,
+                "frame_index": 1,
+                "frame_uri": "s3://fave-artifacts/requests/421de6c5-edc0-4bee-a38b-1d08d31535a0/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "warm-steady-5concurrent"
+  },
+  {
+    "timestamp": "2026-01-24T17:21:13.258769",
+    "duration_ms": 25985,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "d4b995de-e873-470d-9faa-c282f24db9cc",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 3761,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.8805,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1629,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.8145,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1094,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.547,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 13207,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 6.6035,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 261,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.1305,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "image",
+                    "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg",
+                    "metadata": {
+                      "clip": "clip_000.tar.tar",
+                      "frame_index": 1
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 888,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.444,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "json",
+                    "uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-object-detector/clip_0/1.json",
+                    "metadata": {
+                      "clip_index": 0,
+                      "frame_index": 1,
+                      "frame_uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1075,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.5375,
+                  "extra": {}
+                },
+                "clip_index": 0,
+                "frame_index": 1,
+                "frame_uri": "s3://fave-artifacts/requests/d4b995de-e873-470d-9faa-c282f24db9cc/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "warm-steady-5concurrent"
+  },
+  {
+    "timestamp": "2026-01-24T17:21:13.258914",
+    "duration_ms": 25985,
+    "status": "success",
+    "response": {
+      "status": "ok",
+      "request_id": "0af906ed-86c4-4be9-a9b9-57da9dacebf4",
+      "result": {
+        "linear": [
+          {
+            "stage": "stage-ffmpeg-0",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-0/media.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 3775,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 1.8875,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-librosa",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "archive",
+                "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-librosa/segments.tar.gz",
+                "metadata": {}
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1652,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.826,
+              "extra": {}
+            }
+          },
+          {
+            "stage": "stage-ffmpeg-1",
+            "status": "success",
+            "message": null,
+            "outputs": [
+              {
+                "type": "video",
+                "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-1/clip_000.mp4",
+                "metadata": {
+                  "clip_index": 0
+                }
+              }
+            ],
+            "metrics": {
+              "duration_ms": 1068,
+              "memory_limit_mb": 512,
+              "cold_start": false,
+              "cost_unit": 0.534,
+              "extra": {}
+            }
+          }
+        ],
+        "clips": [
+          {
+            "clip_index": 0,
+            "input_uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-1/clip_000.mp4",
+            "stages": [
+              {
+                "stage": "stage-ffmpeg-2",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-2/clip_000.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 13274,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 6.637,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-deepspeech",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "archive",
+                    "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-deepspeech/clip_000.tar.tar.gz",
+                    "metadata": {}
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 216,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.108,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-ffmpeg-3",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "image",
+                    "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg",
+                    "metadata": {
+                      "clip": "clip_000.tar.tar",
+                      "frame_index": 1
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 894,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.447,
+                  "extra": {}
+                },
+                "clip_index": 0
+              },
+              {
+                "stage": "stage-object-detector",
+                "status": "success",
+                "message": null,
+                "outputs": [
+                  {
+                    "type": "json",
+                    "uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-object-detector/clip_0/1.json",
+                    "metadata": {
+                      "clip_index": 0,
+                      "frame_index": 1,
+                      "frame_uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+                    }
+                  }
+                ],
+                "metrics": {
+                  "duration_ms": 1021,
+                  "memory_limit_mb": 512,
+                  "cold_start": false,
+                  "cost_unit": 0.5105,
+                  "extra": {}
+                },
+                "clip_index": 0,
+                "frame_index": 1,
+                "frame_uri": "s3://fave-artifacts/requests/0af906ed-86c4-4be9-a9b9-57da9dacebf4/stage-ffmpeg-3/clip_000.tar.tar/frame_0001.jpg"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "profile": "warm-steady-5concurrent"
+  }
+]

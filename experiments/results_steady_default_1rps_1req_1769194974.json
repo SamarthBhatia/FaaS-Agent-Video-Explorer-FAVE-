@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2026-01-23T20:02:54.150635",
+    "duration_ms": 9,
+    "status": "failure",
+    "response": {
+      "error": "Server error '503 Service Unavailable' for url 'http://127.0.0.1:32436/function/orchestrator'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503"
+    },
+    "profile": "default"
+  }
+]

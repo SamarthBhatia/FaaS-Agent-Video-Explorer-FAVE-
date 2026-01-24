@@ -114,6 +114,8 @@ kubectl apply -f manifests/orchestrator-manual.yaml
 for f in manifests/stage-*-manual.yaml; do kubectl apply -f $f; done
 ```
 
+**Note:** It can take a minute for the functions to become ready. You can check their status with `kubectl get pods -n openfaas-fn -w` and wait for them to be `Running`.
+
 
 **Option B: Standard Deployment**
 *Requires pushing images to a public registry (Docker Hub/GHCR).*
@@ -158,6 +160,8 @@ We provide tools to simulate different deployment regimes (Warm vs. Cold) and tr
     ```bash
     # Steady state (1 req/sec for 60s)
     python3 scripts/workload_generator.py \
+      --gateway http://127.0.0.1:8080 \
+      --video s3://fave-artifacts/input/sample.mp4 \
       --pattern steady --requests 60 --rps 1 --profile warm-steady
 
     # Burst (10 concurrent requests)
@@ -174,12 +178,13 @@ We provide tools to simulate different deployment regimes (Warm vs. Cold) and tr
 
 ## Key Results
 
-| Regime | Pattern | Latency (P50) | Notes |
-|--------|---------|---------------|-------|
-| Warm   | Baseline| ~8.8 s        | Full pipeline success |
-| Cold   | Burst   | >22.0 s       | Heavy initialization penalty |
+| Regime | Pattern | Latency (P50) | Success Rate | Cost Units | Notes |
+|--------|---------|---------------|--------------|------------|-------|
+| Warm   | Baseline (1 req) | 11-22 s | 100% | 5-10 | Single request |
+| Warm   | Steady (5 concurrent) | 26.0 s | 100% | 10.95 | Parallel processing |
+| Cold   | Burst (5 concurrent) | 33.9 s | 100% | 14.75 | Cold start penalty |
 
-See `FINAL_REPORT.md` for detailed graphs and findings.
+See `FINAL_REPORT.md` for detailed analysis and findings.
 
 ---
 

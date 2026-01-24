@@ -15,13 +15,19 @@ secrets/
 *.tar.gz
 *.wav
 *.jpg
-index.py
 
 # Runtime Data
 nats/
 prometheus/
 minio_data/
 
+# Experiments - DO NOT IGNORE - these are evidence of work!
+# Keep all experiment JSON files and analysis results
+
 # Python
 __pycache__/
-*.pycGEMINI.md
+*.pyc
+GEMINI.md
+
+# OS
+.DS_Store

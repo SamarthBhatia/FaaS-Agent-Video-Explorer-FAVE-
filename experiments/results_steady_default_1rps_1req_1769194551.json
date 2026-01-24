@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2026-01-23T19:55:45.191110",
+    "duration_ms": 6014,
+    "status": "failure",
+    "response": {
+      "error": "[Errno 61] Connection refused"
+    },
+    "profile": "default"
+  }
+]
