@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-02-06T18:36:16.074456",
+  "disk_results_file": "2026-02-06T18:34:59.441178",
+  "ramdisk_results_file": "2026-02-06T18:36:04.772358",
+  "comparison": [
+    {
+      "size": "1mb",
+      "metric": "upload",
+      "disk_ms": 68.30743360187626,
+      "ramdisk_ms": 41.93808340060059,
+      "speedup": 1.6287686051217598
+    },
+    {
+      "size": "1mb",
+      "metric": "download",
+      "disk_ms": 23.29009179957211,
+      "ramdisk_ms": 32.84689159627305,
+      "speedup": 0.7090501008690485
+    },
+    {
+      "size": "1mb",
+      "metric": "roundtrip",
+      "disk_ms": 91.59752540144837,
+      "ramdisk_ms": 74.78497499687364,
+      "speedup": 1.2248118743808842
+    },
+    {
+      "size": "5mb",
+      "metric": "upload",
+      "disk_ms": 95.35357499989914,
+      "ramdisk_ms": 73.00984160247026,
+      "speedup": 1.3060372808242455
+    },
+    {
+      "size": "5mb",
+      "metric": "download",
+      "disk_ms": 55.30865820037434,
+      "ramdisk_ms": 65.94517460034695,
+      "speedup": 0.8387066761983121
+    },
+    {
+      "size": "5mb",
+      "metric": "roundtrip",
+      "disk_ms": 150.66223320027348,
+      "ramdisk_ms": 138.9550162028172,
+      "speedup": 1.0842518486728723
+    },
+    {
+      "size": "10mb",
+      "metric": "upload",
+      "disk_ms": 159.5404667998082,
+      "ramdisk_ms": 133.07062500098255,
+      "speedup": 1.1989157396580215
+    },
+    {
+      "size": "10mb",
+      "metric": "download",
+      "disk_ms": 117.48038319929037,
+      "ramdisk_ms": 101.54270019993419,
+      "speedup": 1.1569554775279307
+    },
+    {
+      "size": "10mb",
+      "metric": "roundtrip",
+      "disk_ms": 277.0208499990986,
+      "ramdisk_ms": 234.61332520091673,
+      "speedup": 1.1807549710224905
+    }
+  ]
+}

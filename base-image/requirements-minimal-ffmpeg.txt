@@ -1,0 +1,7 @@
+# Minimal FFmpeg Stage Dependencies
+# For stage-ffmpeg-0, stage-ffmpeg-1, stage-ffmpeg-2, stage-ffmpeg-3
+
+boto3==1.35.54
+httpx==0.27.2
+pydantic==2.8.2
+soundfile==0.12.1

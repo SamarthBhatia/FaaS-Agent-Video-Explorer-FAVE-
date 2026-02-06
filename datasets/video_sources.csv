@@ -1,0 +1,7 @@
+name,url,description,size_mb
+classroom,https://github.com/intel-iot-devkit/sample-videos/raw/master/classroom.mp4,Intel IoT DevKit classroom scene,15
+face-demographics,https://github.com/intel-iot-devkit/sample-videos/raw/master/face-demographics-walking-and-pause.mp4,People walking with face detection scenarios,25
+people-detection,https://github.com/intel-iot-devkit/sample-videos/raw/master/people-detection.mp4,Multiple people in frame for detection,20
+head-pose,https://github.com/intel-iot-devkit/sample-videos/raw/master/head-pose-face-detection-female-and-male.mp4,Head pose estimation demo,18
+worker-safety,https://github.com/intel-iot-devkit/sample-videos/raw/master/worker-zone-detection.mp4,Industrial worker safety detection,22
+car-detection,https://github.com/intel-iot-devkit/sample-videos/raw/master/car-detection.mp4,Vehicle detection scenario,12

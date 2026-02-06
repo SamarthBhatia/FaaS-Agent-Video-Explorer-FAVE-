@@ -1,0 +1,26 @@
+# FAVE Minimal ONNX Base Image
+# For stage-object-detector (YOLOv4-Tiny)
+# Size: ~1.0 GB (down from 2.2 GB)
+
+FROM python:3.9-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# OpenCV and ONNX system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# ONNX Runtime and OpenCV Python dependencies
+COPY requirements-minimal-onnx.txt /tmp/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Common utilities
+COPY common/ /opt/fave_common/
+ENV PYTHONPATH="/opt/fave_common:${PYTHONPATH}"
+
+WORKDIR /workspace

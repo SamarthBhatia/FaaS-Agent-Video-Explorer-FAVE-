@@ -1,0 +1,26 @@
+# FAVE Minimal FFmpeg Base Image
+# For stage-ffmpeg-0, stage-ffmpeg-1, stage-ffmpeg-2, stage-ffmpeg-3
+# Size: ~800 MB (down from 2.2 GB)
+
+FROM python:3.9-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# FFmpeg and minimal system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    ffmpeg \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# FFmpeg stage Python dependencies
+COPY requirements-minimal-ffmpeg.txt /tmp/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Common utilities
+COPY common/ /opt/fave_common/
+ENV PYTHONPATH="/opt/fave_common:${PYTHONPATH}"
+
+WORKDIR /workspace

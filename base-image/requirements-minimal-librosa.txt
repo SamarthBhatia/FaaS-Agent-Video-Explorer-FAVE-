@@ -1,0 +1,10 @@
+# Minimal Librosa Stage Dependencies
+# For stage-librosa audio segmentation
+
+boto3==1.35.54
+httpx==0.27.2
+pydantic==2.8.2
+numpy==1.26.4
+scipy==1.11.4
+librosa==0.10.2
+soundfile==0.12.1

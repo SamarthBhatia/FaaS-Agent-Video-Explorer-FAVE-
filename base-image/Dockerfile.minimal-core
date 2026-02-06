@@ -1,0 +1,24 @@
+# FAVE Minimal Core Base Image
+# Smallest base for orchestrator and simple stages
+# Size: ~500 MB (down from 2.2 GB)
+
+FROM python:3.9-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Minimal system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Core Python dependencies only
+COPY requirements-minimal-core.txt /tmp/requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Common utilities
+COPY common/ /opt/fave_common/
+ENV PYTHONPATH="/opt/fave_common:${PYTHONPATH}"
+
+WORKDIR /workspace
