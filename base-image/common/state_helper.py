@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import os
+import threading
 from typing import Any, Dict
 
 from storage_helper import object_exists, read_json, write_json
 
 ARTIFACT_BUCKET = os.getenv("ARTIFACT_BUCKET", "fave-artifacts")
+_state_lock = threading.Lock()
 
 
 def state_uri(request_id: str) -> str:
@@ -39,8 +41,9 @@ def update_state(request_id: str, **patch: Any) -> Dict[str, Any]:
 
 def append_stage_entry(request_id: str, entry: Dict[str, Any]) -> Dict[str, Any]:
     """Append a stage log entry to the state."""
-    state = load_state(request_id)
-    stages = state.setdefault("stages", [])
-    stages.append(entry)
-    save_state(request_id, state)
-    return state
+    with _state_lock:
+        state = load_state(request_id)
+        stages = state.setdefault("stages", [])
+        stages.append(entry)
+        save_state(request_id, state)
+        return state
