@@ -39,6 +39,10 @@ class OrchestratorService:
             "stage-ffmpeg-3",
         ]
         self.memory_limit_mb = get_memory_limit_mb()
+        self._client = httpx.Client(
+            timeout=None,
+            limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+        )
 
     def handle(self, raw_body: str) -> Dict[str, Any]:
         """Entry point invoked by handler."""
@@ -292,7 +296,6 @@ class OrchestratorService:
     def _invoke_stage(self, stage_name: str, payload: StagePayload) -> StageResult:
         """Call the OpenFaaS function for a given stage and parse the response."""
         url = f"{self.gateway_url}/function/{stage_name}"
-        with httpx.Client(timeout=None) as client:
-            response = client.post(url, json=json.loads(payload.model_dump_json()))
-            response.raise_for_status()
+        response = self._client.post(url, json=json.loads(payload.model_dump_json()))
+        response.raise_for_status()
         return StageResult.model_validate_json(response.text)
