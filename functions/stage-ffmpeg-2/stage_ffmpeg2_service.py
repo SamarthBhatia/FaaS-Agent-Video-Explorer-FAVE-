@@ -71,7 +71,7 @@ class StageFFmpeg2Service:
 
             self._run_ffmpeg(["-i", str(raw_audio), "-vn", "-ar", "16000", "-ac", "1", str(audio_path)])
 
-            self._run_ffmpeg(["-i", str(clip_path), "-vcodec", "libx264", "-crf", "30", str(compressed_video)])
+            self._run_ffmpeg(["-i", str(clip_path), "-vcodec", "libx264", "-preset", "ultrafast", "-threads", "0", "-crf", "30", str(compressed_video)])
 
             self._run_tar(
                 ["-czf", str(archive_path), audio_path.name, compressed_video.name, clip_path.name],
