@@ -89,7 +89,7 @@ class StageFFmpeg0Service:
             return output_uri
 
     def _run_ffmpeg(self, args, check=True):
-        cmd = ["ffmpeg", "-y"] + args
+        cmd = ["ffmpeg", "-y", "-threads", "2"] + args
         subprocess.run(cmd, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def _run_tar(self, archive_path: Path, members, cwd: Path):
