@@ -52,9 +52,29 @@ spec:
               name: artifact-secret-key
         - name: ENABLE_OBJECT_DETECTOR
           value: "true"
+        - name: OMP_NUM_THREADS
+          value: "8"
+        - name: OPENBLAS_NUM_THREADS
+          value: "8"
 
         image: fave-orchestrator:dev
         imagePullPolicy: IfNotPresent
         name: orchestrator
         ports:
         - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    faas_function: orchestrator
+  name: orchestrator
+  namespace: openfaas-fn
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: orchestrator
