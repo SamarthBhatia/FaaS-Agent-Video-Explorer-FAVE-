@@ -142,7 +142,7 @@ class OrchestratorService:
         initial_results.append(self._summarize_result(ffmpeg1_result))
         clip_refs = ffmpeg1_result.outputs
 
-        with ThreadPoolExecutor(max_workers=len(clip_refs) or 1) as pool:
+        with ThreadPoolExecutor(max_workers=min(len(clip_refs), 3)) as pool:
             futures = {
                 pool.submit(self._process_single_clip, idx, clip_ref, request_id, req.profile, is_dry_run): idx
                 for idx, clip_ref in enumerate(clip_refs)
