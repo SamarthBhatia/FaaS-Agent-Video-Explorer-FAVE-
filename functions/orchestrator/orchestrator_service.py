@@ -4,6 +4,7 @@ import json
 import os
 import tempfile
 import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
@@ -150,14 +151,14 @@ class OrchestratorService:
             res_ffmpeg2 = self._execute_stage("stage-ffmpeg-2", clip_uri, request_id, req.profile, {"clip_index": idx}, is_dry_run)
             clip_stage_entries.append(self._summarize_result(res_ffmpeg2, extra={"clip_index": idx}))
             
-            # 2. Transcription (deepspeech)
-            uri_ds_in = self._next_input_uri(res_ffmpeg2, clip_uri)
-            res_ds = self._execute_stage("stage-deepspeech", uri_ds_in, request_id, req.profile, {"clip_index": idx}, is_dry_run)
+            # 2 & 3. Transcription + Frame Sampling (parallel — no dependency on each other)
+            ffmpeg2_out = self._next_input_uri(res_ffmpeg2, clip_uri)
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                fut_ds = pool.submit(self._execute_stage, "stage-deepspeech", ffmpeg2_out, request_id, req.profile, {"clip_index": idx}, is_dry_run)
+                fut_ff3 = pool.submit(self._execute_stage, "stage-ffmpeg-3", ffmpeg2_out, request_id, req.profile, {"clip_index": idx}, is_dry_run)
+                res_ds = fut_ds.result()
+                res_ff3 = fut_ff3.result()
             clip_stage_entries.append(self._summarize_result(res_ds, extra={"clip_index": idx}))
-            
-            # 3. Frame Sampling (ffmpeg-3)
-            uri_ff3_in = self._next_input_uri(res_ds, uri_ds_in)
-            res_ff3 = self._execute_stage("stage-ffmpeg-3", uri_ff3_in, request_id, req.profile, {"clip_index": idx}, is_dry_run)
             clip_stage_entries.append(self._summarize_result(res_ff3, extra={"clip_index": idx}))
             
             # 4. Object Detection (per frame)
