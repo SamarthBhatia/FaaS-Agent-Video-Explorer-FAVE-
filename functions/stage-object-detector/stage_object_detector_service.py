@@ -40,7 +40,10 @@ class StageObjectDetectorService:
         # Initialize session and run dummy inference to warm up onnxruntime
         try:
             if os.path.exists(self.model_path) and os.path.getsize(self.model_path) > 0:
-                self.sess = ort.InferenceSession(self.model_path)
+                opts = ort.SessionOptions()
+                opts.intra_op_num_threads = 1
+                opts.inter_op_num_threads = 1
+                self.sess = ort.InferenceSession(self.model_path, sess_options=opts)
                 self.input_name = self.sess.get_inputs()[0].name
                 self._warmup_inference()
             else:

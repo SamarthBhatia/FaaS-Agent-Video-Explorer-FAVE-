@@ -3,9 +3,9 @@ FROM python:3.9-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     POETRY_VIRTUALENVS_CREATE=false \
-    OMP_NUM_THREADS=2 \
-    OPENBLAS_NUM_THREADS=2 \
-    MKL_NUM_THREADS=2
+    OMP_NUM_THREADS=1 \
+    OPENBLAS_NUM_THREADS=1 \
+    MKL_NUM_THREADS=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \

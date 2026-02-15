@@ -61,20 +61,17 @@ class StageFFmpeg2Service:
             compressed_video = tmp_path / "clip_compressed.mp4"
             archive_path = tmp_path / "clip_bundle.tar.gz"
 
-            self._run_ffmpeg(["-i", str(clip_path), "-map", "0:a?", str(raw_audio)], check=False)
-            
-            # Fallback for audio
-            if not raw_audio.exists() or raw_audio.stat().st_size == 0:
-                if raw_audio.exists(): raw_audio.unlink()
-                # Create silent wav
-                self._run_ffmpeg(["-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono", "-t", "1", str(raw_audio)])
+            # Extract and resample audio to 16kHz mono in one step
+            self._run_ffmpeg(["-i", str(clip_path), "-vn", "-ar", "16000", "-ac", "1", str(audio_path)], check=False)
 
-            self._run_ffmpeg(["-i", str(raw_audio), "-vn", "-ar", "16000", "-ac", "1", str(audio_path)])
+            if not audio_path.exists() or audio_path.stat().st_size == 0:
+                if audio_path.exists(): audio_path.unlink()
+                self._run_ffmpeg(["-f", "lavfi", "-i", "anullsrc=r=16000:cl=mono", "-t", "1", str(audio_path)])
 
-            self._run_ffmpeg(["-i", str(clip_path), "-vcodec", "libx264", "-preset", "ultrafast", "-crf", "30", str(compressed_video)])
+            self._run_ffmpeg(["-i", str(clip_path), "-c:v", "copy", "-an", str(compressed_video)])
 
             self._run_tar(
-                ["-czf", str(archive_path), audio_path.name, compressed_video.name, clip_path.name],
+                ["-czf", str(archive_path), audio_path.name, compressed_video.name],
                 cwd=tmp_path,
             )
 
@@ -88,7 +85,7 @@ class StageFFmpeg2Service:
 
     @staticmethod
     def _run_ffmpeg(args, check=True):
-        cmd = ["ffmpeg", "-y", "-threads", "2"] + args
+        cmd = ["ffmpeg", "-y", "-threads", "1"] + args
         subprocess.run(cmd, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     @staticmethod

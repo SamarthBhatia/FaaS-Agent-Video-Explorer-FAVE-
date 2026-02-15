@@ -102,7 +102,11 @@ class StageDeepSpeechService:
                 ds = deepspeech.Model(self.model_path)
                 if os.path.exists(self.scorer_path):
                     ds.enableExternalScorer(self.scorer_path)
-                sys.stderr.write("WARMUP: DeepSpeech model loaded successfully\n")
+                # Run a dummy inference to warm up internal buffers
+                import numpy as np
+                dummy_audio = np.zeros(16000, dtype=np.int16)  # 1 second of silence
+                ds.stt(dummy_audio)
+                sys.stderr.write("WARMUP: DeepSpeech model loaded and warmed successfully\n")
                 return ds
         except (ImportError, Exception) as exc:
             sys.stderr.write(f"WARMUP: DeepSpeech model load failed (non-fatal): {exc}\n")
