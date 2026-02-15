@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -23,6 +24,7 @@ class StageDeepSpeechService:
         self.model_path = os.getenv("DEEPSPEECH_MODEL", "/opt/models/deepspeech-0.9.3-models.pbmm")
         self.scorer_path = os.getenv("DEEPSPEECH_SCORER", "/opt/models/deepspeech-0.9.3-models.scorer")
         self.memory_limit_mb = get_memory_limit_mb()
+        self.ds_model = self._load_model()
 
     def handle(self, raw_body: str) -> dict:
         try:
@@ -92,21 +94,35 @@ class StageDeepSpeechService:
             log_event(STAGE_NAME, "completed", request_id=payload.request_id, output_uri=output_uri)
             return output_uri
 
+    def _load_model(self):
+        """Load DeepSpeech model once at startup to avoid per-request cold start."""
+        try:
+            import deepspeech
+            if os.path.exists(self.model_path):
+                ds = deepspeech.Model(self.model_path)
+                if os.path.exists(self.scorer_path):
+                    ds.enableExternalScorer(self.scorer_path)
+                sys.stderr.write("WARMUP: DeepSpeech model loaded successfully\n")
+                return ds
+        except (ImportError, Exception) as exc:
+            sys.stderr.write(f"WARMUP: DeepSpeech model load failed (non-fatal): {exc}\n")
+        return None
+
     def _run_deepspeech(self, audio_path: Path, transcript_path: Path) -> None:
         try:
-            # First check if audio file exists
             if not audio_path.exists():
                 msg = f"Audio file not found: {audio_path}"
                 log_event(STAGE_NAME, "warning", message=msg)
                 transcript_path.write_text(f"Dummy transcript: {msg}\n")
                 return
 
-            import deepspeech
             import numpy as np
             import wave
 
-            ds = deepspeech.Model(self.model_path)
-            ds.enableExternalScorer(self.scorer_path)
+            ds = self.ds_model
+            if ds is None:
+                transcript_path.write_text("Dummy transcript: DeepSpeech model not available\n")
+                return
 
             with wave.open(str(audio_path), "rb") as wf:
                 if wf.getframerate() != 16000 or wf.getnchannels() != 1:
@@ -117,7 +133,7 @@ class StageDeepSpeechService:
 
             text = ds.stt(audio)
             transcript_path.write_text(text.strip() + "\n")
-            
+
         except (ImportError, Exception) as exc:
             msg = f"DeepSpeech error or missing: {str(exc)}"
             log_event(STAGE_NAME, "warning", message=msg)

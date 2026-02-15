@@ -37,16 +37,28 @@ class StageObjectDetectorService:
             with open(self.label_path, "r") as f:
                 self.labels = [line.strip() for line in f.readlines()]
 
-        # Initialize session
+        # Initialize session and run dummy inference to warm up onnxruntime
         try:
             if os.path.exists(self.model_path) and os.path.getsize(self.model_path) > 0:
                 self.sess = ort.InferenceSession(self.model_path)
                 self.input_name = self.sess.get_inputs()[0].name
+                self._warmup_inference()
             else:
                 self.sess = None
         except Exception as e:
             log_exception(STAGE_NAME, "init_model", e)
             self.sess = None
+
+    def _warmup_inference(self) -> None:
+        """Run a dummy inference to warm up onnxruntime at container startup."""
+        try:
+            import sys
+            dummy = np.random.randn(1, 3, 416, 416).astype(np.float32)
+            self.sess.run(None, {self.input_name: dummy})
+            sys.stderr.write("WARMUP: ONNX inference pre-warmed successfully\n")
+        except Exception as exc:
+            import sys
+            sys.stderr.write(f"WARMUP: ONNX warmup failed (non-fatal): {exc}\n")
 
     def handle(self, raw_body: str) -> dict:
         try:

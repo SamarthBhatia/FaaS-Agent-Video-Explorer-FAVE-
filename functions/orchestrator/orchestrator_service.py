@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-import threading
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -25,9 +24,6 @@ class OrchestratorService:
     Coordinates VideoSearcher pipeline stages.
     Currently supports a sequential pipeline definition with optional dry-run mode.
     """
-
-    # Limit concurrent pipelines to reduce CPU contention during bursts
-    _pipeline_semaphore = threading.Semaphore(int(os.getenv("MAX_CONCURRENT_PIPELINES", "2")))
 
     def __init__(self) -> None:
         self.gateway_url = os.getenv("GATEWAY_URL", "http://gateway.openfaas:8080")
@@ -75,7 +71,7 @@ class OrchestratorService:
             input_uri = self._ensure_input_artifact(req.video_uri, request_id)
             update_state(request_id, input_uri=input_uri)
             
-            with self._pipeline_semaphore, stage_timer() as elapsed:
+            with stage_timer() as elapsed:
                 result = self._run_pipeline(request_id, input_uri, req, is_dry_run)
             
             duration_ms = elapsed()

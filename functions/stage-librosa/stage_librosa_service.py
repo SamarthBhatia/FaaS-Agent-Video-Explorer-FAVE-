@@ -26,6 +26,7 @@ class StageLibrosaService:
     def __init__(self) -> None:
         self.bucket = os.getenv("ARTIFACT_BUCKET", "fave-artifacts")
         self.memory_limit_mb = get_memory_limit_mb()
+        self._warmup()
 
     def handle(self, raw_body: str) -> dict:
         try:
@@ -123,6 +124,17 @@ class StageLibrosaService:
     def _run_tar(self, args, cwd: Path):
         cmd = ["tar"] + args
         subprocess.run(cmd, check=True, cwd=str(cwd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    @staticmethod
+    def _warmup() -> None:
+        """Pre-warm librosa internals at container startup to eliminate cold start overhead."""
+        try:
+            sr = 22050
+            dummy = np.random.randn(sr).astype(np.float32)  # 1 second of noise
+            librosa.effects.split(dummy, top_db=30)
+            sys.stderr.write("WARMUP: librosa pre-warmed successfully\n")
+        except Exception as exc:
+            sys.stderr.write(f"WARMUP: librosa warmup failed (non-fatal): {exc}\n")
 
     def _is_cold_start(self) -> bool:
         global COLD_START  # pylint: disable=global-statement
