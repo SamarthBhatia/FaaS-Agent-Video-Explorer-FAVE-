@@ -142,59 +142,67 @@ class OrchestratorService:
         initial_results.append(self._summarize_result(ffmpeg1_result))
         clip_refs = ffmpeg1_result.outputs
 
-        clip_results: List[Dict[str, Any]] = []
-        for idx, clip_ref in enumerate(clip_refs):
-            clip_uri = clip_ref.uri
-            clip_stage_entries = []
-            
-            # 1. Clip Compression (ffmpeg-2)
-            res_ffmpeg2 = self._execute_stage("stage-ffmpeg-2", clip_uri, request_id, req.profile, {"clip_index": idx}, is_dry_run)
-            clip_stage_entries.append(self._summarize_result(res_ffmpeg2, extra={"clip_index": idx}))
-            
-            # 2 & 3. Transcription + Frame Sampling (parallel — no dependency on each other)
-            ffmpeg2_out = self._next_input_uri(res_ffmpeg2, clip_uri)
-            with ThreadPoolExecutor(max_workers=2) as pool:
-                fut_ds = pool.submit(self._execute_stage, "stage-deepspeech", ffmpeg2_out, request_id, req.profile, {"clip_index": idx}, is_dry_run)
-                fut_ff3 = pool.submit(self._execute_stage, "stage-ffmpeg-3", ffmpeg2_out, request_id, req.profile, {"clip_index": idx}, is_dry_run)
-                res_ds = fut_ds.result()
-                res_ff3 = fut_ff3.result()
-            clip_stage_entries.append(self._summarize_result(res_ds, extra={"clip_index": idx}))
-            clip_stage_entries.append(self._summarize_result(res_ff3, extra={"clip_index": idx}))
-            
-            # 4. Object Detection (per frame)
-            frame_refs = res_ff3.outputs
-            if self.enable_object_detector and frame_refs:
-                for f_idx, frame_ref in enumerate(frame_refs):
-                    # frame_ref.metadata might contain "frame_index"
-                    frame_meta = frame_ref.metadata or {}
-                    fanout_info = {
-                        "clip_index": idx,
-                        "frame_index": frame_meta.get("frame_index", f_idx),
-                        "frame_uri": frame_ref.uri,
-                    }
-                    
-                    od_result = self._execute_stage(
-                        "stage-object-detector",
-                        frame_ref.uri,
-                        request_id,
-                        req.profile,
-                        fanout_info,
-                        is_dry_run,
-                    )
-                    clip_stage_entries.append(self._summarize_result(od_result, extra=fanout_info))
-            elif not self.enable_object_detector:
-                od_result = self._object_detector_stub(request_id, idx)
-                clip_stage_entries.append(self._summarize_result(od_result, extra={"clip_index": idx}))
-
-            clip_results.append(
-                {
-                    "clip_index": idx,
-                    "input_uri": clip_ref.uri,
-                    "stages": clip_stage_entries,
-                }
-            )
+        with ThreadPoolExecutor(max_workers=len(clip_refs) or 1) as pool:
+            futures = {
+                pool.submit(self._process_single_clip, idx, clip_ref, request_id, req.profile, is_dry_run): idx
+                for idx, clip_ref in enumerate(clip_refs)
+            }
+            clip_results: List[Dict[str, Any]] = [None] * len(clip_refs)  # type: ignore[list-item]
+            for fut in as_completed(futures):
+                clip_idx = futures[fut]
+                clip_results[clip_idx] = fut.result()
 
         return {"linear": initial_results, "clips": clip_results}
+
+    def _process_single_clip(
+        self, idx: int, clip_ref: ArtifactRef, request_id: str, profile: str, is_dry_run: bool,
+    ) -> Dict[str, Any]:
+        """Process a single clip through ffmpeg-2, deepspeech, ffmpeg-3, and object detection."""
+        clip_uri = clip_ref.uri
+        clip_stage_entries: List[Dict[str, Any]] = []
+
+        # 1. Clip Compression (ffmpeg-2)
+        res_ffmpeg2 = self._execute_stage("stage-ffmpeg-2", clip_uri, request_id, profile, {"clip_index": idx}, is_dry_run)
+        clip_stage_entries.append(self._summarize_result(res_ffmpeg2, extra={"clip_index": idx}))
+
+        # 2 & 3. Transcription + Frame Sampling (parallel — no dependency on each other)
+        ffmpeg2_out = self._next_input_uri(res_ffmpeg2, clip_uri)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            fut_ds = pool.submit(self._execute_stage, "stage-deepspeech", ffmpeg2_out, request_id, profile, {"clip_index": idx}, is_dry_run)
+            fut_ff3 = pool.submit(self._execute_stage, "stage-ffmpeg-3", ffmpeg2_out, request_id, profile, {"clip_index": idx}, is_dry_run)
+            res_ds = fut_ds.result()
+            res_ff3 = fut_ff3.result()
+        clip_stage_entries.append(self._summarize_result(res_ds, extra={"clip_index": idx}))
+        clip_stage_entries.append(self._summarize_result(res_ff3, extra={"clip_index": idx}))
+
+        # 4. Object Detection (per frame)
+        frame_refs = res_ff3.outputs
+        if self.enable_object_detector and frame_refs:
+            for f_idx, frame_ref in enumerate(frame_refs):
+                frame_meta = frame_ref.metadata or {}
+                fanout_info = {
+                    "clip_index": idx,
+                    "frame_index": frame_meta.get("frame_index", f_idx),
+                    "frame_uri": frame_ref.uri,
+                }
+                od_result = self._execute_stage(
+                    "stage-object-detector",
+                    frame_ref.uri,
+                    request_id,
+                    profile,
+                    fanout_info,
+                    is_dry_run,
+                )
+                clip_stage_entries.append(self._summarize_result(od_result, extra=fanout_info))
+        elif not self.enable_object_detector:
+            od_result = self._object_detector_stub(request_id, idx)
+            clip_stage_entries.append(self._summarize_result(od_result, extra={"clip_index": idx}))
+
+        return {
+            "clip_index": idx,
+            "input_uri": clip_ref.uri,
+            "stages": clip_stage_entries,
+        }
 
     def _execute_stage(
         self,
