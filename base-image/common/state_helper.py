@@ -9,7 +9,16 @@ from typing import Any, Dict
 from storage_helper import object_exists, read_json, write_json
 
 ARTIFACT_BUCKET = os.getenv("ARTIFACT_BUCKET", "fave-artifacts")
-_state_lock = threading.Lock()
+_state_locks: Dict[str, threading.Lock] = {}
+_meta_lock = threading.Lock()
+
+
+def _get_request_lock(request_id: str) -> threading.Lock:
+    """Return a per-request lock, creating one if needed."""
+    with _meta_lock:
+        if request_id not in _state_locks:
+            _state_locks[request_id] = threading.Lock()
+        return _state_locks[request_id]
 
 
 def state_uri(request_id: str) -> str:
@@ -41,7 +50,7 @@ def update_state(request_id: str, **patch: Any) -> Dict[str, Any]:
 
 def append_stage_entry(request_id: str, entry: Dict[str, Any]) -> Dict[str, Any]:
     """Append a stage log entry to the state."""
-    with _state_lock:
+    with _get_request_lock(request_id):
         state = load_state(request_id)
         stages = state.setdefault("stages", [])
         stages.append(entry)
