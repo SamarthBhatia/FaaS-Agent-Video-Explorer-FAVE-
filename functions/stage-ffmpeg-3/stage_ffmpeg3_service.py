@@ -73,7 +73,7 @@ class StageFFmpeg3Service:
             cmd = [
                 "ffmpeg",
                 "-y",
-                "-threads", "2",
+                "-threads", "4",
                 "-i",
                 str(video_path),
                 "-vf",

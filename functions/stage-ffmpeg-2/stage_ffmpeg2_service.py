@@ -88,7 +88,7 @@ class StageFFmpeg2Service:
 
     @staticmethod
     def _run_ffmpeg(args, check=True):
-        cmd = ["ffmpeg", "-y", "-threads", "2"] + args
+        cmd = ["ffmpeg", "-y", "-threads", "4"] + args
         subprocess.run(cmd, check=check, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     @staticmethod
