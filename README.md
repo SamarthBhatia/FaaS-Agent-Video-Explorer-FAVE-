@@ -6,8 +6,9 @@ FAVE is a serverless refactor of the VideoSearcher pipeline. It decomposes the o
 
 - **Agentic pipeline**: Orchestrator + 7 processing stages (ffmpeg, librosa, deepspeech, detector).
 - **Serverless-first**: OpenFaaS functions, MinIO-backed artifacts, telemetry with duration/cost metrics.
-- **Instrumentation**: Workload generator, deployment regime script, and experiments for warm vs. cold behavior.
-- **Analysis**: Comprehensive report (`FINAL_REPORT.md`) with findings on cold-start penalties, success rates, and cost trade-offs.
+- **Monitoring**: Prometheus metrics collection + Grafana dashboard with 24 panels for live monitoring.
+- **Load Testing**: JMeter-based automated video ingestion and load testing.
+- **Analysis**: Experiments for warm vs. cold behavior, cost trade-offs, and cold-start penalties.
 
 ---
 
@@ -28,145 +29,209 @@ All stages read/write artifacts in MinIO under `requests/<id>/<stage>/…`, keep
 
 ## Repository Layout
 
-- `functions/`: OpenFaaS functions (Dockerfiles, services, handlers).
-- `manifests/`: Kubernetes manifests for manual deployment (bypasses CE restrictions).
-- `scripts/`: Workload generator, deployment tools, and analysis scripts.
-- `base-image/`: Shared Python base image (ffmpeg, boto3, helpers).
-- `docs/`: Architecture and design notes.
-- `experiments/`: Raw data and logs from performance experiments.
-- `tests/`: Smoke tests for logic verification.
-- `FINAL_REPORT.md`: Full analysis of experimental results.
+- `functions/` – OpenFaaS functions (Dockerfiles, services, handlers).
+- `manifests/` – Kubernetes manifests (functions, MinIO, Grafana).
+- `scripts/` – Workload generator, JMeter runner, video ingestion, deployment tools, analysis scripts.
+- `base-image/` – Shared Python base image (ffmpeg, boto3, helpers).
+- `datasets/` – Video source configs and JMeter CSV data.
+- `jmeter/` – JMeter test plan for load testing.
+- `docs/` – Architecture and design notes.
+- `experiments/` – Raw data, charts, and logs from performance experiments.
+- `tests/` – Smoke tests for logic verification.
 
 ---
 
 ## Prerequisites
 
-- **Docker Desktop** (Kubernetes enabled) or a standard Kubernetes cluster.
-- **Tools**: `kubectl`, `faas-cli`, `mc` (MinIO client), `python3` (3.9+).
-- **Optional**: `arkade` (for easy OpenFaaS installation).
+Install on macOS:
+
+```bash
+# Kubernetes: Enable in Docker Desktop → Settings → Kubernetes → Enable Kubernetes
+
+# MinIO client
+brew install minio/stable/mc
+
+# arkade (OpenFaaS installer)
+curl -sLS https://get.arkade.dev | sh
+
+# faas-cli (OpenFaaS CLI)
+arkade get faas-cli
+
+# JMeter (load testing)
+brew install jmeter
+
+# Python dependencies (for video ingestion and workload generator)
+pip3 install httpx boto3 requests
+```
 
 ---
 
-## Quick Start
+## Setup & Run Guide
 
-### 1. Setup Environment
+### Step 1: Install OpenFaaS (includes Prometheus)
 
-Clone the repository:
 ```bash
-git clone <repo_url> && cd FAVE
+arkade install openfaas-ce
+kubectl rollout status deployment/gateway -n openfaas --timeout=5m
+
+# Verify Prometheus is running (deployed automatically with OpenFaaS CE)
+kubectl rollout status deployment/prometheus -n openfaas --timeout=2m
 ```
 
-Build the base image:
+### Step 2: Deploy MinIO
+
 ```bash
-./scripts/build-base-image.sh
-```
-
-### 2. Install Infrastructure (Kubernetes)
-
-Use `arkade` or Helm to install OpenFaaS and MinIO:
-```bash
-# Install OpenFaaS
-arkade install openfaas
-
-# Install MinIO
 kubectl apply -f manifests/minio-k8s.yaml
+kubectl rollout status deployment/minio -n default --timeout=2m
 ```
 
-**Port-forward services** (keep these running in background terminals):
+### Step 3: Deploy Grafana
+
 ```bash
-# OpenFaaS Gateway (8080)
+kubectl apply -f manifests/grafana.yaml
+kubectl rollout status deployment/grafana -n openfaas --timeout=2m
+```
+
+### Step 4: Port-forward all services
+
+```bash
+# Kill any existing port-forwards first
+lsof -i :8080 -t | xargs kill -9 2>/dev/null
+lsof -i :9000 -t | xargs kill -9 2>/dev/null
+lsof -i :9090 -t | xargs kill -9 2>/dev/null
+lsof -i :3000 -t | xargs kill -9 2>/dev/null
+
 kubectl port-forward -n openfaas svc/gateway 8080:8080 &
-
-# MinIO API (9000)
 kubectl port-forward -n default svc/minio 9000:9000 &
+kubectl port-forward -n openfaas svc/prometheus 9090:9090 &
+kubectl port-forward -n openfaas svc/grafana 3000:3000 &
+sleep 3
 ```
 
-### 3. Configure Credentials
+### Step 5: Create secrets
 
-Create the required secrets in the `openfaas-fn` namespace (where the functions run):
 ```bash
-kubectl create namespace openfaas-fn || true
+kubectl create namespace openfaas-fn 2>/dev/null || true
 
-# Access keys for the local dev MinIO
 kubectl create secret generic artifact-access-key \
-  --from-literal=artifact-access-key=faveadmin -n openfaas-fn
+  --from-literal=artifact-access-key=faveadmin -n openfaas-fn \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 kubectl create secret generic artifact-secret-key \
-  --from-literal=artifact-secret-key=favesecret -n openfaas-fn
+  --from-literal=artifact-secret-key=favesecret -n openfaas-fn \
+  --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-Retrieve the OpenFaaS admin password and log in:
-```bash
-PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
-echo -n $PASSWORD | faas-cli login --username admin --password-stdin
-```
+### Step 6: Build all Docker images
 
-### 4. Deploy Functions
-
-**Manual Manifests (Bypass CE Registry Restrictions)**
-Build the images locally:
 ```bash
+# Build base image (shared dependencies — takes ~2 min first time)
+./scripts/build-base-image.sh
+
+# Build all 8 function images
 faas-cli build -f functions/stack.yml
 ```
 
-Apply the manifests:
+### Step 7: Deploy all functions
+
 ```bash
+# Deploy orchestrator and all stages
 kubectl apply -f manifests/orchestrator-manual.yaml
-for f in manifests/stage-*-manual.yaml; do kubectl apply -f $f; done
+for f in manifests/stage-*-manual.yaml; do kubectl apply -f "$f"; done
+
+# Scale all functions to 1 replica (warm regime)
+./scripts/deploy_regime.sh warm
+
+# Wait for all pods to be running
+kubectl get pods -n openfaas-fn -w
+# >>> Press Ctrl+C once all 8 pods show "Running 1/1", then continue to Step 8
 ```
 
-**Note:** It can take a minute for the functions to become ready. You can check their status with `kubectl get pods -n openfaas-fn -w` and wait for them to be `Running`.
+### Step 8: Setup MinIO bucket and ingest videos
 
-
-**Option B: Standard Deployment**
-*Requires pushing images to a public registry (Docker Hub/GHCR).*
 ```bash
-faas-cli up -f functions/stack.yml
-```
-
-### 5. Run a Smoke Test
-
-Download a sample video and upload it to the local MinIO bucket:
-```bash
-# Setup bucket alias
+# Configure MinIO client
 mc alias set fave-local http://127.0.0.1:9000 faveadmin favesecret
+
+# Create bucket
 mc mb --ignore-existing fave-local/fave-artifacts
 
-# Download sample
-curl -L -o sample.mp4 https://github.com/intel-iot-devkit/sample-videos/raw/master/classroom.mp4
-mc cp sample.mp4 fave-local/fave-artifacts/input/sample.mp4
+# Ingest sample videos from datasets/video_sources.csv into MinIO
+# (downloads videos and generates datasets/jmeter_videos.csv for JMeter)
+python3 scripts/auto_ingest_videos.py --limit 3
+
+# Verify videos are in MinIO
+python3 scripts/auto_ingest_videos.py --list
 ```
 
-Trigger the pipeline:
+### Step 9: Run load test with JMeter
+
 ```bash
-python3 scripts/workload_generator.py \
-  --gateway http://127.0.0.1:8080 \
-  --video s3://fave-artifacts/input/sample.mp4 \
-  --pattern steady --requests 1 --rps 1
+# Default warm test (5 threads, 5s ramp-up)
+./scripts/run_jmeter_test.sh --skip-ingest
+
+# Cold burst test (all threads fire simultaneously)
+./scripts/run_jmeter_test.sh --cold --skip-ingest
+
+# Custom thread count
+./scripts/run_jmeter_test.sh --threads 10 --skip-ingest
+
+# Open JMeter GUI to inspect or modify the test plan
+./scripts/run_jmeter_test.sh --gui
+
+# JMeter results are saved as .jtl and .json in experiments/jmeter/
+```
+
+### Step 10: Monitor with Prometheus & Grafana
+
+```bash
+# Grafana dashboard (pre-provisioned with FAVE Pipeline Dashboard):
+open http://localhost:3000/d/fave-pipeline
+# Login: admin / fave2024 (or browse anonymously)
+```
+
+The dashboard shows 24 panels across 4 sections:
+- **Live Metrics**: invocation rate, latency percentiles, success rate, active replicas
+- **Cold vs Warm Analysis**: cold start detection, latency distribution, replica scaling
+- **Cost & Resource Monitoring**: estimated cost units, cost rate, duration/invocation breakdown
+- **Error tracking**: error rate by function
+
+Prometheus raw metrics are available at http://localhost:9090 for ad-hoc queries.
+
+Run JMeter while watching Grafana to see live metrics — JMeter shows client-side performance (end-to-end latency), Grafana shows server-side performance (per-function latency, cold starts, scaling).
+
+### Step 11: Analyze results (optional)
+
+```bash
+python3 scripts/final_analysis.py
+# Generates charts and regime_statistics.csv in experiments/
 ```
 
 ---
 
 ## Running Experiments
 
-We provide tools to simulate different deployment regimes (Warm vs. Cold) and traffic patterns.
+Tools to simulate different deployment regimes (Warm vs. Cold) and traffic patterns:
 
 1.  **Apply a Regime**:
     ```bash
-    # Scales functions to 1 replica (Warm) or 0/low resources (Cold)
-    ./scripts/deploy_regime.sh warm
+    ./scripts/deploy_regime.sh warm   # Scale functions to 1 replica
+    ./scripts/deploy_regime.sh cold   # Scale down to 0
     ```
 
-2.  **Run Workload**:
+2.  **Run Workload** (alternative to JMeter):
     ```bash
-    # Steady state (1 req/sec for 60s)
+    # Single request
     python3 scripts/workload_generator.py \
-      --gateway http://127.0.0.1:8080 \
-      --video s3://fave-artifacts/input/sample.mp4 \
-      --pattern steady --requests 60 --rps 1 --profile warm-steady
+      --gateway http://localhost:8080 \
+      --video s3://fave-artifacts/input/classroom.mp4 \
+      --pattern steady --requests 1 --rps 1 --profile warm-test
 
-    # Burst (10 concurrent requests)
+    # Burst (5 concurrent requests)
     python3 scripts/workload_generator.py \
-      --pattern burst --requests 10 --profile warm-burst
+      --gateway http://localhost:8080 \
+      --video s3://fave-artifacts/input/classroom.mp4 \
+      --pattern burst --requests 5 --profile burst-test
     ```
 
 3.  **Analyze Results**:
@@ -176,23 +241,49 @@ We provide tools to simulate different deployment regimes (Warm vs. Cold) and tr
 
 ---
 
-## Key Results
+## Teardown
 
-| Regime | Pattern | Latency (P50) | Success Rate | Cost Units | Notes |
-|--------|---------|---------------|--------------|------------|-------|
-| Warm   | Baseline (1 req) | 11-22 s | 100% | 5-10 | Single request |
-| Warm   | Steady (5 concurrent) | 26.0 s | 100% | 10.95 | Parallel processing |
-| Cold   | Burst (5 concurrent) | 33.9 s | 100% | 14.75 | Cold start penalty |
+```bash
+# Stop port-forwards
+lsof -i :8080 -t | xargs kill -9 2>/dev/null
+lsof -i :9000 -t | xargs kill -9 2>/dev/null
+lsof -i :9090 -t | xargs kill -9 2>/dev/null
+lsof -i :3000 -t | xargs kill -9 2>/dev/null
 
-See `FINAL_REPORT.md` for detailed analysis and findings.
+# Delete all function deployments
+kubectl delete -f manifests/orchestrator-manual.yaml
+for f in manifests/stage-*-manual.yaml; do kubectl delete -f "$f"; done
+
+# Delete Grafana
+kubectl delete -f manifests/grafana.yaml
+
+# Delete MinIO
+kubectl delete -f manifests/minio-k8s.yaml
+
+# Delete OpenFaaS (also removes Prometheus)
+kubectl delete namespace openfaas openfaas-fn
+
+# (Optional) Disable Kubernetes entirely in Docker Desktop:
+# Docker Desktop → Settings → Kubernetes → Uncheck "Enable Kubernetes"
+```
 
 ---
 
 ## Troubleshooting
 
-- **500 Internal Server Error**: Often due to timeouts on the gateway. The default is 60s, which is short for video processing.
-- **ImagePullBackOff**: Ensure you've built the images locally (`faas-cli build`) and that your Kubernetes cluster can see them (Docker Desktop shares the image cache automatically).
-- **"Community Edition" Error**: Use the **Option A** deployment method (manual manifests) to bypass registry checks.
+| Problem | Fix |
+|---------|-----|
+| Port already in use | `lsof -i :<port> -t \| xargs kill -9` then re-run port-forward |
+| Secrets already exist | The `--dry-run=client` commands handle this automatically |
+| MinIO bucket not found | Re-run Step 8 (`mc mb` + `auto_ingest_videos.py`) |
+| Pods stuck in Pending | Wait for Docker Desktop Kubernetes to settle, check `kubectl get events -n openfaas-fn` |
+| 502/503 from gateway | Wait 30s for pods to warm up, then retry |
+| `kubectl get pods -w` hangs | That's normal — press Ctrl+C once all pods show Running |
+| JMeter not found | `brew install jmeter` |
+| `jmeter_videos.csv` missing | Run `python3 scripts/auto_ingest_videos.py --limit 3` |
+| Grafana shows "No data" | Ensure Prometheus is running: `kubectl get pods -n openfaas -l app=prometheus` |
+| Grafana login | admin / fave2024, or browse anonymously (read-only) |
+| ImagePullBackOff | Ensure you've built images locally (`faas-cli build`); Docker Desktop shares the image cache |
 
 ---
 
