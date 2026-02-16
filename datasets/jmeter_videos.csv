@@ -1,0 +1,4 @@
+video_uri,name
+s3://fave-artifacts/input/classroom.mp4,classroom
+s3://fave-artifacts/input/face-demographics.mp4,face-demographics
+s3://fave-artifacts/input/people-detection.mp4,people-detection

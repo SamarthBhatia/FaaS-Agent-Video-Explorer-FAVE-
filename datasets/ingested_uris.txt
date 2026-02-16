@@ -1,0 +1,3 @@
+s3://fave-artifacts/input/classroom.mp4
+s3://fave-artifacts/input/face-demographics.mp4
+s3://fave-artifacts/input/people-detection.mp4
