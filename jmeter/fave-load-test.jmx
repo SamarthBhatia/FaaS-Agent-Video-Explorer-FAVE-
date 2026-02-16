@@ -85,7 +85,7 @@
           <!-- Response Assertion -->
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Success Assertion">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="0">"status":"ok"</stringProp>
+              <stringProp name="0">"status": "ok"</stringProp>
             </collectionProp>
             <stringProp name="Assertion.custom_message">Pipeline did not return success status</stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>

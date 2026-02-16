@@ -45,6 +45,18 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(str(e).encode('utf-8'))
 
+    def do_GET(self):
+        if self.path == '/healthz':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b"OK")
+        else:
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b"OK")
+
 if __name__ == "__main__":
     port = int(os.getenv("port", 5000))
     # Using ThreadingHTTPServer to handle concurrent requests per pod
