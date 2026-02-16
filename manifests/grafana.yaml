@@ -1,0 +1,559 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: openfaas
+data:
+  prometheus.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.openfaas:9090
+        isDefault: true
+        editable: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-provider
+  namespace: openfaas
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'FAVE Dashboards'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: openfaas
+data:
+  fave-dashboard.json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": true,
+      "panels": [
+        {
+          "title": "🚀 FAVE Pipeline - Live Metrics",
+          "type": "row",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+          "collapsed": false
+        },
+        {
+          "title": "Function Invocations (Rate/min)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 1},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "invocations/min",
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "auto"
+              },
+              "unit": "reqpm"
+            }
+          },
+          "options": {
+            "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(gateway_function_invocation_total{function_name=~\".*\"}[1m])) by (function_name) * 60",
+              "legendFormat": "{{function_name}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Function Latency (P50, P90, P99)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 1},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "axisCenteredZero": false,
+                "axisLabel": "seconds",
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "lineWidth": 2
+              },
+              "unit": "s"
+            }
+          },
+          "options": {
+            "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom"}
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.50, sum(rate(gateway_functions_seconds_bucket[5m])) by (le, function_name))",
+              "legendFormat": "{{function_name}} P50",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.90, sum(rate(gateway_functions_seconds_bucket[5m])) by (le, function_name))",
+              "legendFormat": "{{function_name}} P90",
+              "refId": "B"
+            },
+            {
+              "expr": "histogram_quantile(0.99, sum(rate(gateway_functions_seconds_bucket[5m])) by (le, function_name))",
+              "legendFormat": "{{function_name}} P99",
+              "refId": "C"
+            }
+          ]
+        },
+        {
+          "title": "Total Invocations",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 4, "x": 0, "y": 9},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 100},
+                  {"color": "red", "value": 500}
+                ]
+              },
+              "unit": "short"
+            }
+          },
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto"},
+          "targets": [
+            {
+              "expr": "sum(gateway_function_invocation_total)",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Success Rate",
+          "type": "gauge",
+          "gridPos": {"h": 4, "w": 4, "x": 4, "y": 9},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "steps": [
+                  {"color": "red", "value": null},
+                  {"color": "yellow", "value": 80},
+                  {"color": "green", "value": 95}
+                ]
+              },
+              "unit": "percent"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(gateway_function_invocation_total{code=\"200\"}) / sum(gateway_function_invocation_total) * 100",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Avg Latency",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 4, "x": 8, "y": 9},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 5},
+                  {"color": "red", "value": 20}
+                ]
+              },
+              "unit": "s"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(gateway_functions_seconds_sum[5m])) / sum(rate(gateway_functions_seconds_count[5m]))",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Active Replicas",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 4, "x": 12, "y": 9},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "steps": [
+                  {"color": "blue", "value": null}
+                ]
+              },
+              "unit": "short"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(gateway_service_count)",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Requests In-Flight",
+          "type": "stat",
+          "gridPos": {"h": 4, "w": 4, "x": 16, "y": 9},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 5},
+                  {"color": "red", "value": 10}
+                ]
+              }
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(http_requests_in_flight)",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "🔥 Cold vs Warm Analysis",
+          "type": "row",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 13},
+          "collapsed": false
+        },
+        {
+          "title": "Cold Start Detection (Latency Spikes)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14},
+          "datasource": "Prometheus",
+          "description": "Latency spikes indicate cold starts. Baseline (warm) vs spikes (cold).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "axisCenteredZero": false,
+                "axisLabel": "seconds",
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "lineWidth": 2,
+                "thresholdsStyle": {"mode": "dashed"}
+              },
+              "thresholds": {
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 10},
+                  {"color": "red", "value": 20}
+                ]
+              },
+              "unit": "s"
+            }
+          },
+          "options": {
+            "legend": {"displayMode": "list", "placement": "bottom"}
+          },
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.99, sum(rate(gateway_functions_seconds_bucket{function_name=\"orchestrator\"}[1m])) by (le))",
+              "legendFormat": "Orchestrator P99",
+              "refId": "A"
+            },
+            {
+              "expr": "histogram_quantile(0.99, sum(rate(gateway_functions_seconds_bucket{function_name=~\"stage-.*\"}[1m])) by (le, function_name))",
+              "legendFormat": "{{function_name}} P99",
+              "refId": "B"
+            }
+          ]
+        },
+        {
+          "title": "Latency Distribution (Cold vs Warm)",
+          "type": "histogram",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14},
+          "datasource": "Prometheus",
+          "description": "Bimodal distribution shows cold (right peak) vs warm (left peak)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "fillOpacity": 80,
+                "hideFrom": {"legend": false, "tooltip": false, "viz": false}
+              }
+            }
+          },
+          "options": {
+            "bucketOffset": 0,
+            "legend": {"displayMode": "list", "placement": "bottom"}
+          },
+          "targets": [
+            {
+              "expr": "sum(increase(gateway_functions_seconds_bucket[30m])) by (le)",
+              "format": "heatmap",
+              "legendFormat": "{{le}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Replica Scaling Events",
+          "type": "timeseries",
+          "gridPos": {"h": 6, "w": 24, "x": 0, "y": 22},
+          "datasource": "Prometheus",
+          "description": "When replicas go to 0 and scale back up = cold start",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "lineWidth": 1,
+                "stacking": {"mode": "normal"}
+              },
+              "unit": "short"
+            }
+          },
+          "targets": [
+            {
+              "expr": "gateway_service_count{function_name=~\"orchestrator|stage-.*\"}",
+              "legendFormat": "{{function_name}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "💰 Cost & Resource Monitoring",
+          "type": "row",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 28},
+          "collapsed": false
+        },
+        {
+          "title": "Estimated Cost Units (cumulative)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 29},
+          "datasource": "Prometheus",
+          "description": "Cost = duration_ms * memory_mb / 1000. Approximation based on invocation time.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "lineWidth": 2
+              },
+              "unit": "short"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(increase(gateway_functions_seconds_sum[1h])) by (function_name) * 512 / 1000",
+              "legendFormat": "{{function_name}} cost",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Cost Rate (units/min)",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 29},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 80,
+                "lineWidth": 1
+              },
+              "unit": "short"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(gateway_functions_seconds_sum[5m])) by (function_name) * 512 / 1000 * 60",
+              "legendFormat": "{{function_name}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Function Duration Breakdown",
+          "type": "piechart",
+          "gridPos": {"h": 8, "w": 8, "x": 0, "y": 37},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"}
+            }
+          },
+          "options": {
+            "legend": {"displayMode": "table", "placement": "right", "values": ["percent", "value"]},
+            "pieType": "pie"
+          },
+          "targets": [
+            {
+              "expr": "sum(increase(gateway_functions_seconds_sum[1h])) by (function_name)",
+              "legendFormat": "{{function_name}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Invocations by Function",
+          "type": "piechart",
+          "gridPos": {"h": 8, "w": 8, "x": 8, "y": 37},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"}
+            }
+          },
+          "options": {
+            "legend": {"displayMode": "table", "placement": "right", "values": ["percent", "value"]},
+            "pieType": "donut"
+          },
+          "targets": [
+            {
+              "expr": "sum(increase(gateway_function_invocation_total[1h])) by (function_name)",
+              "legendFormat": "{{function_name}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate by Function",
+          "type": "timeseries",
+          "gridPos": {"h": 8, "w": 8, "x": 16, "y": 37},
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 30
+              },
+              "unit": "percentunit"
+            }
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(gateway_function_invocation_total{code!=\"200\"}[5m])) by (function_name) / sum(rate(gateway_function_invocation_total[5m])) by (function_name)",
+              "legendFormat": "{{function_name}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ],
+      "refresh": "5s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": ["fave", "serverless", "openfaas"],
+      "templating": {"list": []},
+      "time": {"from": "now-15m", "to": "now"},
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "FAVE Pipeline Dashboard",
+      "uid": "fave-pipeline",
+      "version": 1
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: openfaas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.2.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "admin"
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "fave2024"
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: "Viewer"
+          volumeMounts:
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: grafana-dashboards-provider
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: grafana-dashboards
+              mountPath: /var/lib/grafana/dashboards
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      volumes:
+        - name: grafana-datasources
+          configMap:
+            name: grafana-datasources
+        - name: grafana-dashboards-provider
+          configMap:
+            name: grafana-dashboards-provider
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboards
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: openfaas
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: grafana
