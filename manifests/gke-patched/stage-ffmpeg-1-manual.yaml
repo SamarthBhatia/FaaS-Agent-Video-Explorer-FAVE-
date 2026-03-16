@@ -4,19 +4,19 @@ metadata:
   labels:
     com.openfaas.scale.max: '5'
     com.openfaas.scale.min: '0'
-    faas_function: stage-object-detector
-  name: stage-object-detector
+    faas_function: stage-ffmpeg-1
+  name: stage-ffmpeg-1
   namespace: openfaas-fn
 spec:
   replicas: 0
   selector:
     matchLabels:
-      app: stage-object-detector
+      app: stage-ffmpeg-1
   template:
     metadata:
       labels:
-        app: stage-object-detector
-        faas_function: stage-object-detector
+        app: stage-ffmpeg-1
+        faas_function: stage-ffmpeg-1
     spec:
       containers:
       - env:
@@ -50,9 +50,9 @@ spec:
             secretKeyRef:
               key: artifact-secret-key
               name: artifact-secret-key
-        image: fave-stage-object-detector:dev
-        imagePullPolicy: IfNotPresent
-        name: stage-object-detector
+        image: us-central1-docker.pkg.dev/fave-experiment-2026/fave/fave-stage-ffmpeg-1:dev
+        imagePullPolicy: Always
+        name: stage-ffmpeg-1
         ports:
         - containerPort: 8080
         resources:
@@ -67,8 +67,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    faas_function: stage-object-detector
-  name: stage-object-detector
+    faas_function: stage-ffmpeg-1
+  name: stage-ffmpeg-1
   namespace: openfaas-fn
 spec:
   ports:
@@ -77,4 +77,4 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: stage-object-detector
+    app: stage-ffmpeg-1

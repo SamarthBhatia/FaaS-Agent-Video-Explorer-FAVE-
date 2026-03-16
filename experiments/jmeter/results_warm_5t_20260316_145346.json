@@ -1,0 +1,57 @@
+[
+  {
+    "timestamp": "1773669228491",
+    "duration_ms": 11229,
+    "status": "success",
+    "response_code": "200",
+    "label": "Process Video Request",
+    "thread_name": "Warm Steady State Test 1-1",
+    "latency_ms": 11228,
+    "connect_time_ms": 33,
+    "bytes": 3354
+  },
+  {
+    "timestamp": "1773669231383",
+    "duration_ms": 8440,
+    "status": "success",
+    "response_code": "200",
+    "label": "Process Video Request",
+    "thread_name": "Warm Steady State Test 1-4",
+    "latency_ms": 8440,
+    "connect_time_ms": 1,
+    "bytes": 3360
+  },
+  {
+    "timestamp": "1773669230370",
+    "duration_ms": 27593,
+    "status": "success",
+    "response_code": "200",
+    "label": "Process Video Request",
+    "thread_name": "Warm Steady State Test 1-3",
+    "latency_ms": 27473,
+    "connect_time_ms": 5,
+    "bytes": 45518
+  },
+  {
+    "timestamp": "1773669229368",
+    "duration_ms": 45506,
+    "status": "success",
+    "response_code": "200",
+    "label": "Process Video Request",
+    "thread_name": "Warm Steady State Test 1-2",
+    "latency_ms": 45492,
+    "connect_time_ms": 0,
+    "bytes": 80815
+  },
+  {
+    "timestamp": "1773669232368",
+    "duration_ms": 42463,
+    "status": "success",
+    "response_code": "200",
+    "label": "Process Video Request",
+    "thread_name": "Warm Steady State Test 1-5",
+    "latency_ms": 42448,
+    "connect_time_ms": 1,
+    "bytes": 80816
+  }
+]

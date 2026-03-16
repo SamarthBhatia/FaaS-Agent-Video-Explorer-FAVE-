@@ -50,8 +50,8 @@ spec:
             secretKeyRef:
               key: artifact-secret-key
               name: artifact-secret-key
-        image: fave-stage-object-detector:dev
-        imagePullPolicy: IfNotPresent
+        image: us-central1-docker.pkg.dev/fave-experiment-2026/fave/fave-stage-object-detector:dev
+        imagePullPolicy: Always
         name: stage-object-detector
         ports:
         - containerPort: 8080

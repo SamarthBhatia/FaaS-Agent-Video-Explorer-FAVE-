@@ -1,0 +1,7 @@
+mode,threads,total_requests,success_rate,avg_duration_ms,median_duration_ms,p95_duration_ms,p99_duration_ms,throughput_rps
+cold,5,5,100.0,15377,15999,23334,23641,1.26
+warm,1,5,100.0,11097,12107,18934,19036,1.26
+warm,5,5,100.0,27046,27593,44897,45384,1.29
+warm,10,5,100.0,21808,21261,37130,37270,1.32
+warm,20,5,100.0,20222,20219,35176,35326,1.32
+warm,50,5,80.0,19996,21102,33939,34006,1.27

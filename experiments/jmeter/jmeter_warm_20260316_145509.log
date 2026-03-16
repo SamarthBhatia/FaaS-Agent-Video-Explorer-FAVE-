@@ -1,0 +1,78 @@
+2026-03-16 14:55:11,290 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2026-03-16 14:55:11,311 INFO o.a.j.JMeter: Loading user properties from: /opt/homebrew/Cellar/jmeter/5.6.3/libexec/bin/user.properties
+2026-03-16 14:55:11,311 INFO o.a.j.JMeter: Loading system properties from: /opt/homebrew/Cellar/jmeter/5.6.3/libexec/bin/system.properties
+2026-03-16 14:55:11,312 INFO o.a.j.JMeter: Setting JMeter property: GATEWAY_URL=127.0.0.1
+2026-03-16 14:55:11,312 INFO o.a.j.JMeter: Setting JMeter property: GATEWAY_PORT=8080
+2026-03-16 14:55:11,312 INFO o.a.j.JMeter: Setting JMeter property: ThreadGroup.num_threads=10
+2026-03-16 14:55:11,312 INFO o.a.j.JMeter: Setting JMeter property: ThreadGroup.ramp_time=5
+2026-03-16 14:55:11,312 INFO o.a.j.JMeter: Setting JMeter property: LoopController.loops=1
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: Version 5.6.3
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: java.version=21.0.6
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: os.name=Mac OS X
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: os.arch=aarch64
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: os.version=26.2
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: file.encoding=UTF-8
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: java.awt.headless=true
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: Max memory     =1073741824
+2026-03-16 14:55:11,315 INFO o.a.j.JMeter: Available Processors =8
+2026-03-16 14:55:11,328 INFO o.a.j.JMeter: Default Locale=English (EN)
+2026-03-16 14:55:11,329 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2026-03-16 14:55:11,329 INFO o.a.j.JMeter: JMeterHome=/opt/homebrew/Cellar/jmeter/5.6.3/libexec
+2026-03-16 14:55:11,329 INFO o.a.j.JMeter: user.dir  =/Users/samarthbhatia/Developer/Systems/CloudComputing
+2026-03-16 14:55:11,329 INFO o.a.j.JMeter: PWD       =/Users/samarthbhatia/Developer/Systems/CloudComputing
+2026-03-16 14:55:11,331 INFO o.a.j.JMeter: IP: 127.0.0.1 Name: Samarths-MacBook-Air.local FullName: localhost
+2026-03-16 14:55:11,363 INFO o.a.j.s.FileServer: Default base='/Users/samarthbhatia/Developer/Systems/CloudComputing'
+2026-03-16 14:55:11,365 INFO o.a.j.s.FileServer: Set new base='/Users/samarthbhatia/Developer/Systems/CloudComputing/jmeter'
+2026-03-16 14:55:11,506 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2026-03-16 14:55:11,538 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
+2026-03-16 14:55:11,540 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2026-03-16 14:55:11,542 INFO o.a.j.s.SaveService: Loading file: /Users/samarthbhatia/Developer/Systems/CloudComputing/jmeter/fave-load-test.jmx
+2026-03-16 14:55:11,582 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-03-16 14:55:11,582 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-03-16 14:55:11,582 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-03-16 14:55:11,582 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-03-16 14:55:11,582 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2026-03-16 14:55:11,582 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2026-03-16 14:55:11,618 INFO o.a.j.JMeter: Creating summariser <summary>
+2026-03-16 14:55:11,627 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2026-03-16 14:55:11,627 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2026-03-16 14:55:11,627 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2026-03-16 14:55:11,630 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2026-03-16 14:55:11,630 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2026-03-16 14:55:11,677 INFO o.a.j.r.ClassFinder: Will scan jar /opt/homebrew/Cellar/jmeter/5.6.3/libexec/lib/ext/jmeter-plugins-manager-1.9.jar with filter ExtendsClassFilter [parents=[interface org.apache.jmeter.functions.Function], inner=false, contains=null, notContains=null]. Consider exposing JMeter plugins via META-INF/services, and add JMeter-Skip-Class-Scanning=true manifest attribute so JMeter can skip classfile scanning
+2026-03-16 14:55:11,756 INFO o.a.j.JMeter: Running test (1773669311756)
+2026-03-16 14:55:11,774 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Warm Steady State Test
+2026-03-16 14:55:11,774 INFO o.a.j.e.StandardJMeterEngine: Starting 5 threads for group Warm Steady State Test.
+2026-03-16 14:55:11,775 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2026-03-16 14:55:11,775 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=5 ramp-up=5 delayedStart=false
+2026-03-16 14:55:11,779 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2026-03-16 14:55:11,779 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2026-03-16 14:55:12,096 INFO o.a.j.t.JMeterThread: Thread started: Warm Steady State Test 1-1
+2026-03-16 14:55:12,097 INFO o.a.j.s.FileServer: Stored: datasets/jmeter_videos.csv
+2026-03-16 14:55:12,165 INFO o.a.j.p.h.s.HTTPHCAbstractImpl: Local host = Samarths-MacBook-Air.local
+2026-03-16 14:55:12,183 INFO o.a.j.p.h.s.HTTPHC4Impl: HTTP request retry count = 0
+2026-03-16 14:55:12,185 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2026-03-16 14:55:12,185 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to UTF-8
+2026-03-16 14:55:12,185 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2026-03-16 14:55:12,185 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2026-03-16 14:55:13,097 INFO o.a.j.t.JMeterThread: Thread started: Warm Steady State Test 1-2
+2026-03-16 14:55:14,096 INFO o.a.j.t.JMeterThread: Thread started: Warm Steady State Test 1-3
+2026-03-16 14:55:15,098 INFO o.a.j.t.JMeterThread: Thread started: Warm Steady State Test 1-4
+2026-03-16 14:55:16,097 INFO o.a.j.t.JMeterThread: Thread started: Warm Steady State Test 1-5
+2026-03-16 14:55:20,027 INFO o.a.j.t.JMeterThread: Thread is done: Warm Steady State Test 1-1
+2026-03-16 14:55:20,027 INFO o.a.j.t.JMeterThread: Thread finished: Warm Steady State Test 1-1
+2026-03-16 14:55:21,465 INFO o.a.j.t.JMeterThread: Thread is done: Warm Steady State Test 1-4
+2026-03-16 14:55:21,465 INFO o.a.j.t.JMeterThread: Thread finished: Warm Steady State Test 1-4
+2026-03-16 14:55:35,397 INFO o.a.j.r.Summariser: summary +      3 in 00:00:24 =    0.1/s Avg: 11768 Min:  6353 Max: 21261 Err:     0 (0.00%) Active: 3 Started: 5 Finished: 2
+2026-03-16 14:55:35,398 INFO o.a.j.t.JMeterThread: Thread is done: Warm Steady State Test 1-3
+2026-03-16 14:55:35,399 INFO o.a.j.t.JMeterThread: Thread finished: Warm Steady State Test 1-3
+2026-03-16 14:55:50,440 INFO o.a.j.t.JMeterThread: Thread is done: Warm Steady State Test 1-2
+2026-03-16 14:55:50,441 INFO o.a.j.t.JMeterThread: Thread finished: Warm Steady State Test 1-2
+2026-03-16 14:55:52,547 INFO o.a.j.t.JMeterThread: Thread is done: Warm Steady State Test 1-5
+2026-03-16 14:55:52,550 INFO o.a.j.t.JMeterThread: Thread finished: Warm Steady State Test 1-5
+2026-03-16 14:55:52,552 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2026-03-16 14:55:52,554 INFO o.a.j.s.FileServer: Close: datasets/jmeter_videos.csv
+2026-03-16 14:55:52,560 INFO o.a.j.r.Summariser: summary +      2 in 00:00:17 =    0.1/s Avg: 36868 Min: 36432 Max: 37305 Err:     0 (0.00%) Active: 0 Started: 5 Finished: 5
+2026-03-16 14:55:52,560 INFO o.a.j.r.Summariser: summary =      5 in 00:00:41 =    0.1/s Avg: 21808 Min:  6353 Max: 37305 Err:     0 (0.00%)

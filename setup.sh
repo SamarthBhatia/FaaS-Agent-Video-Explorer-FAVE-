@@ -73,6 +73,20 @@ kubectl rollout status deployment/gateway -n openfaas --timeout=5m
 echo "Waiting for Prometheus..."
 kubectl rollout status deployment/prometheus -n openfaas --timeout=2m
 
+# Install metrics-server if not present (required for HPA)
+if ! kubectl get deployment metrics-server -n kube-system &>/dev/null; then
+    echo "Installing metrics-server (required for HPA)..."
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+    # Docker Desktop needs --kubelet-insecure-tls
+    kubectl patch deployment metrics-server -n kube-system \
+        --type='json' \
+        -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]' \
+        2>/dev/null || true
+    kubectl rollout status deployment/metrics-server -n kube-system --timeout=2m
+else
+    echo "metrics-server already installed."
+fi
+
 # ─── Step 2: Deploy MinIO ────────────────────────────────────────────
 
 step 2 "Deploy MinIO"

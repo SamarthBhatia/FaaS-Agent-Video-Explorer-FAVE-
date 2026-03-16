@@ -1,0 +1,157 @@
+========================================
+FAVE Scaling Experiment
+========================================
+Thread counts: 5 10
+Modes:         warm
+Cooldown:      30s
+HPA enabled:   true
+Started:       Mon Mar 16 12:32:55 CET 2026
+========================================
+
+Enabling HPA regime...
+
+--- HPA state before tests ---
+NAME                        REFERENCE                          TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 1%/60%   1         10        1          8m33s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 1%/60%   1         10        1          8m33s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 1%/60%   1         10        1          8m33s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 1%/60%   1         10        1          8m33s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 1%/60%   1         10        1          8m33s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 1%/60%   1         10        1          8m33s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 1%/60%   1         10        1          8m33s
+
+========================================
+Run 1/2: warm mode, 5 threads
+Started: Mon Mar 16 12:32:56 CET 2026
+========================================
+--- Pods before run ---
+Pod count: 8
+========================================
+FAVE JMeter Load Test
+========================================
+Test Mode:    warm
+Threads:      5
+Ramp Time:    5s
+Loops:        1
+Gateway:      http://127.0.0.1:8080
+Results:      /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/results_warm_5t_20260316_123256.jtl
+========================================
+
+Step 1: Skipping video ingestion
+
+Step 2: Running JMeter CLI test...
+
+WARNING: package sun.awt.X11 not in java.desktop
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /Users/samarthbhatia/Developer/Systems/CloudComputing/jmeter/fave-load-test.jmx
+Starting standalone test @ 2026 Mar 16 12:32:58 CET (1773660778260)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +      4 in 00:01:02 =    0.1/s Avg: 58522 Min: 55457 Max: 60113 Err:     2 (50.00%) Active: 2 Started: 5 Finished: 3
+summary +      1 in 00:00:02 =    0.5/s Avg: 60092 Min: 60092 Max: 60092 Err:     1 (100.00%) Active: 0 Started: 5 Finished: 5
+summary =      5 in 00:01:04 =    0.1/s Avg: 58836 Min: 55457 Max: 60113 Err:     3 (60.00%)
+Tidying up ...    @ 2026 Mar 16 12:34:02 CET (1773660842790)
+... end of run
+
+========================================
+Test Complete!
+========================================
+Results: /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/results_warm_5t_20260316_123256.jtl
+Log:     /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/jmeter_warm_20260316_123256.log
+
+Step 3: Converting results to JSON...
+Converting: experiments/jmeter/results_warm_5t_20260316_123256.jtl
+JSON output: experiments/jmeter/results_warm_5t_20260316_123256.json
+
+Summary:
+  Total requests: 5
+  Successes: 2 (40.0%)
+  Average duration: 58836ms
+
+Done!
+
+--- HPA state after run ---
+NAME                        REFERENCE                          TARGETS          MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 2%/60%      1         10        1          9m42s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 1272%/60%   1         10        1          9m42s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 2%/60%      1         10        1          9m42s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 2%/60%      1         10        1          9m42s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 1%/60%      1         10        1          9m42s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 3%/60%      1         10        1          9m42s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 3%/60%      1         10        1          9m42s
+
+--- Pod counts after run ---
+Pod count: 11
+
+Cooling down for 30s...
+========================================
+Run 2/2: warm mode, 10 threads
+Started: Mon Mar 16 12:34:36 CET 2026
+========================================
+--- Pods before run ---
+Pod count: 17
+========================================
+FAVE JMeter Load Test
+========================================
+Test Mode:    warm
+Threads:      10
+Ramp Time:    5s
+Loops:        1
+Gateway:      http://127.0.0.1:8080
+Results:      /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/results_warm_10t_20260316_123437.jtl
+========================================
+
+Step 1: Skipping video ingestion
+
+Step 2: Running JMeter CLI test...
+
+WARNING: package sun.awt.X11 not in java.desktop
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /Users/samarthbhatia/Developer/Systems/CloudComputing/jmeter/fave-load-test.jmx
+Starting standalone test @ 2026 Mar 16 12:34:40 CET (1773660880289)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary =      5 in 00:01:05 =    0.1/s Avg: 59189 Min: 56226 Max: 60339 Err:     3 (60.00%)
+Tidying up ...    @ 2026 Mar 16 12:35:45 CET (1773660945242)
+... end of run
+
+========================================
+Test Complete!
+========================================
+Results: /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/results_warm_10t_20260316_123437.jtl
+Log:     /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/jmeter_warm_20260316_123437.log
+
+Step 3: Converting results to JSON...
+Converting: experiments/jmeter/results_warm_10t_20260316_123437.jtl
+JSON output: experiments/jmeter/results_warm_10t_20260316_123437.json
+
+Summary:
+  Total requests: 5
+  Successes: 2 (40.0%)
+  Average duration: 59190ms
+
+Done!
+
+--- HPA state after run ---
+NAME                        REFERENCE                          TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 3%/60%     1         10        1          11m
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 2%/60%     1         10        5          11m
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 426%/60%   1         10        1          11m
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 670%/60%   1         10        1          11m
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 3%/60%     1         10        1          11m
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 949%/60%   1         10        1          11m
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 2%/60%     1         10        4          11m
+
+--- Pod counts after run ---
+Pod count: 25
+
+========================================
+Experiment complete at Mon Mar 16 12:35:47 CET 2026
+Summary log: /Users/samarthbhatia/Developer/Systems/CloudComputing/experiments/jmeter/scaling_experiment_20260316_123255.log
+========================================
