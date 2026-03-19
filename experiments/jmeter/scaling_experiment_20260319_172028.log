@@ -1,0 +1,287 @@
+========================================
+FAVE Scaling Experiment
+========================================
+Thread counts: 5 10 20 50
+Modes:         warm
+Cooldown:      30s
+HPA enabled:   true
+Started:       Thu Mar 19 05:20:28 PM UTC 2026
+========================================
+
+Enabling HPA regime...
+
+--- HPA state before tests ---
+NAME                        REFERENCE                          TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 1%/60%   1         10        1          5m53s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 1%/60%   1         10        1          5m53s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 1%/60%   1         10        1          5m53s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 1%/60%   1         10        1          5m53s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 1%/60%   1         10        1          5m53s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 1%/60%   1         10        1          5m53s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 1%/60%   1         10        1          5m53s
+
+========================================
+Run 1/4: warm mode, 5 threads
+Started: Thu Mar 19 05:20:29 PM UTC 2026
+========================================
+--- Pods before run ---
+Pod count: 8
+========================================
+FAVE JMeter Load Test
+========================================
+Test Mode:    warm
+Threads:      5
+Ramp Time:    5s
+Loops:        1
+Gateway:      http://127.0.0.1:8080
+Results:      /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_5t_20260319_172029.jtl
+========================================
+
+Step 1: Skipping video ingestion
+
+Step 2: Running JMeter CLI test...
+
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/jmeter/fave-load-test.jmx
+Starting standalone test @ 2026 Mar 19 17:20:30 UTC (1773940830419)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +      1 in 00:00:05 =    0.2/s Avg:  4502 Min:  4502 Max:  4502 Err:     0 (0.00%) Active: 5 Started: 5 Finished: 0
+summary +      4 in 00:00:17 =    0.2/s Avg: 12495 Min:  3307 Max: 18479 Err:     0 (0.00%) Active: 0 Started: 5 Finished: 5
+summary =      5 in 00:00:21 =    0.2/s Avg: 10896 Min:  3307 Max: 18479 Err:     0 (0.00%)
+Tidying up ...    @ 2026 Mar 19 17:20:51 UTC (1773940851986)
+... end of run
+
+========================================
+Test Complete!
+========================================
+Results: /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_5t_20260319_172029.jtl
+Log:     /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/jmeter_warm_20260319_172029.log
+
+Step 3: Converting results to JSON...
+Converting: experiments/jmeter/results_warm_5t_20260319_172029.jtl
+JSON output: experiments/jmeter/results_warm_5t_20260319_172029.json
+
+Summary:
+  Total requests: 5
+  Successes: 5 (100.0%)
+  Average duration: 10896ms
+
+Done!
+
+--- HPA state after run ---
+NAME                        REFERENCE                          TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 1%/60%     1         10        1          6m17s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 349%/60%   1         10        1          6m17s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 36%/60%    1         10        1          6m17s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 181%/60%   1         10        1          6m17s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 48%/60%    1         10        1          6m17s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 1%/60%     1         10        1          6m17s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 262%/60%   1         10        1          6m17s
+
+--- Pod counts after run ---
+Pod count: 17
+
+Cooling down for 30s...
+========================================
+Run 2/4: warm mode, 10 threads
+Started: Thu Mar 19 05:21:23 PM UTC 2026
+========================================
+--- Pods before run ---
+Pod count: 35
+========================================
+FAVE JMeter Load Test
+========================================
+Test Mode:    warm
+Threads:      10
+Ramp Time:    5s
+Loops:        1
+Gateway:      http://127.0.0.1:8080
+Results:      /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_10t_20260319_172123.jtl
+========================================
+
+Step 1: Skipping video ingestion
+
+Step 2: Running JMeter CLI test...
+
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/jmeter/fave-load-test.jmx
+Starting standalone test @ 2026 Mar 19 17:21:24 UTC (1773940884893)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +      3 in 00:00:07 =    0.4/s Avg:  2034 Min:   793 Max:  4144 Err:     2 (66.67%) Active: 3 Started: 5 Finished: 2
+summary +      2 in 00:00:06 =    0.3/s Avg: 11815 Min: 11245 Max: 12385 Err:     1 (50.00%) Active: 0 Started: 5 Finished: 5
+summary =      5 in 00:00:13 =    0.4/s Avg:  5946 Min:   793 Max: 12385 Err:     3 (60.00%)
+Tidying up ...    @ 2026 Mar 19 17:21:38 UTC (1773940898421)
+... end of run
+
+========================================
+Test Complete!
+========================================
+Results: /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_10t_20260319_172123.jtl
+Log:     /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/jmeter_warm_20260319_172123.log
+
+Step 3: Converting results to JSON...
+Converting: experiments/jmeter/results_warm_10t_20260319_172123.jtl
+JSON output: experiments/jmeter/results_warm_10t_20260319_172123.json
+
+Summary:
+  Total requests: 5
+  Successes: 2 (40.0%)
+  Average duration: 5947ms
+
+Done!
+
+--- HPA state after run ---
+NAME                        REFERENCE                          TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 1%/60%     1         10        2          7m3s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 1%/60%     1         10        5          7m3s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 1%/60%     1         10        2          7m3s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 1%/60%     1         10        4          7m3s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 1%/60%     1         10        5          7m3s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 362%/60%   1         10        5          7m3s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 1%/60%     1         10        5          7m3s
+
+--- Pod counts after run ---
+Pod count: 35
+
+Cooling down for 30s...
+========================================
+Run 3/4: warm mode, 20 threads
+Started: Thu Mar 19 05:22:09 PM UTC 2026
+========================================
+--- Pods before run ---
+Pod count: 35
+========================================
+FAVE JMeter Load Test
+========================================
+Test Mode:    warm
+Threads:      20
+Ramp Time:    5s
+Loops:        1
+Gateway:      http://127.0.0.1:8080
+Results:      /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_20t_20260319_172210.jtl
+========================================
+
+Step 1: Skipping video ingestion
+
+Step 2: Running JMeter CLI test...
+
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/jmeter/fave-load-test.jmx
+Starting standalone test @ 2026 Mar 19 17:22:11 UTC (1773940931354)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary =      5 in 00:00:13 =    0.4/s Avg:  7283 Min:  3199 Max: 11204 Err:     2 (40.00%)
+Tidying up ...    @ 2026 Mar 19 17:22:23 UTC (1773940943992)
+... end of run
+
+========================================
+Test Complete!
+========================================
+Results: /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_20t_20260319_172210.jtl
+Log:     /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/jmeter_warm_20260319_172210.log
+
+Step 3: Converting results to JSON...
+Converting: experiments/jmeter/results_warm_20t_20260319_172210.jtl
+JSON output: experiments/jmeter/results_warm_20t_20260319_172210.json
+
+Summary:
+  Total requests: 5
+  Successes: 3 (60.0%)
+  Average duration: 7283ms
+
+Done!
+
+--- HPA state after run ---
+NAME                        REFERENCE                          TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 1%/60%   1         10        2          7m49s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 1%/60%   1         10        5          7m49s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 1%/60%   1         10        2          7m49s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 1%/60%   1         10        4          7m49s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 1%/60%   1         10        5          7m49s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 1%/60%   1         10        5          7m49s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 1%/60%   1         10        5          7m49s
+
+--- Pod counts after run ---
+Pod count: 35
+
+Cooling down for 30s...
+========================================
+Run 4/4: warm mode, 50 threads
+Started: Thu Mar 19 05:22:55 PM UTC 2026
+========================================
+--- Pods before run ---
+Pod count: 32
+========================================
+FAVE JMeter Load Test
+========================================
+Test Mode:    warm
+Threads:      50
+Ramp Time:    5s
+Loops:        1
+Gateway:      http://127.0.0.1:8080
+Results:      /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_50t_20260319_172255.jtl
+========================================
+
+Step 1: Skipping video ingestion
+
+Step 2: Running JMeter CLI test...
+
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+WARN StatusConsoleListener The use of package scanning to locate plugins is deprecated and will be removed in a future release
+Creating summariser <summary>
+Created the tree successfully using /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/jmeter/fave-load-test.jmx
+Starting standalone test @ 2026 Mar 19 17:22:56 UTC (1773940976819)
+Waiting for possible Shutdown/StopTestNow/HeapDump/ThreadDump message on port 4445
+summary +      2 in 00:00:06 =    0.3/s Avg:  2975 Min:  2862 Max:  3088 Err:     0 (0.00%) Active: 4 Started: 5 Finished: 1
+summary +      3 in 00:00:15 =    0.2/s Avg: 15045 Min: 10247 Max: 17519 Err:     0 (0.00%) Active: 0 Started: 5 Finished: 5
+summary =      5 in 00:00:21 =    0.2/s Avg: 10217 Min:  2862 Max: 17519 Err:     0 (0.00%)
+Tidying up ...    @ 2026 Mar 19 17:23:18 UTC (1773940998327)
+... end of run
+
+========================================
+Test Complete!
+========================================
+Results: /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/results_warm_50t_20260319_172255.jtl
+Log:     /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/jmeter_warm_20260319_172255.log
+
+Step 3: Converting results to JSON...
+Converting: experiments/jmeter/results_warm_50t_20260319_172255.jtl
+JSON output: experiments/jmeter/results_warm_50t_20260319_172255.json
+
+Summary:
+  Total requests: 5
+  Successes: 5 (100.0%)
+  Average duration: 10217ms
+
+Done!
+
+--- HPA state after run ---
+NAME                        REFERENCE                          TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+hpa-stage-deepspeech        Deployment/stage-deepspeech        cpu: 1%/60%   1         10        2          8m43s
+hpa-stage-ffmpeg-0          Deployment/stage-ffmpeg-0          cpu: 1%/60%   1         10        5          8m43s
+hpa-stage-ffmpeg-1          Deployment/stage-ffmpeg-1          cpu: 1%/60%   1         10        2          8m43s
+hpa-stage-ffmpeg-2          Deployment/stage-ffmpeg-2          cpu: 1%/60%   1         10        4          8m43s
+hpa-stage-ffmpeg-3          Deployment/stage-ffmpeg-3          cpu: 5%/60%   1         10        5          8m43s
+hpa-stage-librosa           Deployment/stage-librosa           cpu: 1%/60%   1         10        5          8m43s
+hpa-stage-object-detector   Deployment/stage-object-detector   cpu: 5%/60%   1         10        5          8m43s
+
+--- Pod counts after run ---
+Pod count: 29
+
+========================================
+Experiment complete at Thu Mar 19 05:23:19 PM UTC 2026
+Summary log: /home/k8s/FaaS-Agent-Video-Explorer-FAVE-/experiments/jmeter/scaling_experiment_20260319_172028.log
+========================================
