@@ -209,6 +209,40 @@ python3 scripts/final_analysis.py
 
 ---
 
+## HPA Autoscaling Experiment (VM / Server)
+
+The pipeline was deployed on a university VM running MicroK8s and tested with Kubernetes Horizontal Pod Autoscaler (HPA) to demonstrate auto-scaling under load.
+
+**Setup:**
+- Single-node MicroK8s cluster with 8 function pods
+- HPA configured on 5 CPU-intensive functions (target: 60% CPU utilization, max 3 replicas)
+- JMeter load test: 2 threads x 10 loops = 20 pipeline requests
+
+**Results (19/20 successful, 95% success rate):**
+- HPA scaled `stage-librosa`, `stage-object-detector`, `stage-ffmpeg-0`, `stage-ffmpeg-3` from 1 to 3 replicas
+- `stage-deepspeech` scaled to 2 replicas
+- `stage-librosa` peaked at ~1500m CPU, `stage-object-detector` at ~930m CPU
+- Response times: 9.5–12s per end-to-end pipeline invocation
+
+Plots in `experiments/reports/prof/`:
+1. `1_throughput_vs_time.png` – JMeter throughput over time
+2. `2_pods_per_function_vs_time.png` – Pod scaling per function
+3. `3_response_time_vs_time.png` – End-to-end response time
+4. `4_cpu_utilization_vs_time.png` – CPU usage per function
+
+JMeter HTML dashboard in `experiments/jmeter-dashboard/vm-final/`.
+
+**Generating plots from raw data:**
+```bash
+python3 scripts/generate_scaling_plots.py \
+    --jtl experiments/jmeter/results_vm_long_20260324_160219.jtl \
+    --pod-counts experiments/metrics/pod_counts_20260324_160024.csv \
+    --cpu-util experiments/metrics/cpu_util_20260324_160024.csv \
+    --output experiments/reports/prof
+```
+
+---
+
 ## Running Experiments
 
 Tools to simulate different deployment regimes (Warm vs. Cold) and traffic patterns:

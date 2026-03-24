@@ -27,7 +27,22 @@ minio_data/
 # Python
 __pycache__/
 *.pyc
+venv/
 GEMINI.md
 
 # OS
 .DS_Store
+
+# IDE / AI assistant
+CLAUDE.md
+.claude/
+
+# Internal notes (not for submission)
+VM_INSTRUCTIONS.md
+DETAILED_ENGINEERING_REPORT.md
+PROJECT_REPORT_SIMPLIFIED.md
+
+# JMeter runtime logs
+jmeter.log
+experiments/jmeter/*.log
+experiments/jmeter/scaling_experiment_*.log
