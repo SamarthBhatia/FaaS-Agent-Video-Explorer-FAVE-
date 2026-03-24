@@ -215,6 +215,39 @@ def plot_cpu_utilization(cpu_data, output_dir):
     plt.close(fig)
     print("  Plot 4: CPU utilization vs time saved")
 
+    # Plot 4b: CPU utilization as percentage of request (100m per pod)
+    CPU_REQUEST_M = 100  # each pod requests 100m CPU
+
+    # Count pods per function per timestamp
+    pod_counts_per_ts = defaultdict(lambda: defaultdict(int))
+    for row in cpu_data:
+        pod_counts_per_ts[row["timestamp"]][row["function"]] += 1
+
+    fig, ax = plt.subplots(figsize=(14, 7))
+    for func, color in zip(all_funcs, colors):
+        times = sorted(agg.keys())
+        elapsed = [(t - t0) for t in times]
+        # Average utilization % = total CPU / (num_pods * request) * 100
+        values = []
+        for t in times:
+            total_cpu = agg[t].get(func, 0)
+            num_pods = pod_counts_per_ts[t].get(func, 1)
+            avg_util = (total_cpu / (num_pods * CPU_REQUEST_M)) * 100
+            values.append(avg_util)
+        ax.plot(elapsed, values, label=func, linewidth=2, color=color)
+
+    ax.axhline(y=60, color="red", linestyle="--", linewidth=1.5, alpha=0.7, label="HPA target (60%)")
+    ax.set_xlabel("Time (seconds)", fontsize=12)
+    ax.set_ylabel("Avg CPU Utilization (% of request)", fontsize=12)
+    ax.set_title("CPU Utilization per Function vs Time (% of 100m request)", fontsize=14, fontweight="bold")
+    ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=9)
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(bottom=0)
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, "4b_cpu_utilization_pct_vs_time.png"), dpi=150)
+    plt.close(fig)
+    print("  Plot 4b: CPU utilization (% of request) vs time saved")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generate professor's requested plots")
