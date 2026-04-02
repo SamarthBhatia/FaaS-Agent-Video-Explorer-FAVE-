@@ -105,7 +105,7 @@ def plot_throughput(jtl_data, output_dir):
     ax.bar(buckets, throughput, width=4.5, color="#0D9488", alpha=0.8, edgecolor="#028090")
     ax.set_xlabel("Time (seconds)", fontsize=12)
     ax.set_ylabel("Throughput (req/s)", fontsize=12)
-    ax.set_title("JMeter Throughput vs Time", fontsize=14, fontweight="bold")
+    ax.set_title("Throughput vs Time", fontsize=14, fontweight="bold")
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
     fig.savefig(os.path.join(output_dir, "1_throughput_vs_time.png"), dpi=150)
