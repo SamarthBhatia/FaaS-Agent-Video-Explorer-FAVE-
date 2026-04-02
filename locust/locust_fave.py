@@ -3,8 +3,7 @@
 Sinusoidal non-homogeneous Poisson workload generator for FAVE pipeline.
 Adapted from Samuele Pozzi's thesis Locust script.
 
-Generates a sinusoidal RPS pattern over a configurable duration and sends
-requests to the OpenFaaS orchestrator function.
+Uses threading instead of gevent for compatibility with system Python.
 
 Usage:
     python3 locust/locust_fave.py --gateway http://127.0.0.1:8080 \
@@ -14,19 +13,12 @@ Usage:
 import argparse
 import csv
 import itertools
-import math
 import os
 import sys
 import time
+import threading
 
 import numpy as np
-
-# Patch stdlib for concurrent requests
-from gevent import monkey
-monkey.patch_all()
-
-import gevent
-from gevent import sleep
 import requests
 
 
@@ -68,7 +60,7 @@ def generate_arrival_times(rps_pattern, duration, seed):
     return accepted
 
 
-def send_request(gateway_url, video_uri, results, req_id):
+def send_request(gateway_url, video_uri, results, results_lock, req_id):
     """Send a single request to the orchestrator and record results."""
     url = f"{gateway_url}/function/orchestrator"
     payload = {"video_uri": video_uri, "profile": "locust-warm"}
@@ -79,7 +71,6 @@ def send_request(gateway_url, video_uri, results, req_id):
         resp = requests.post(url, json=payload, timeout=300)
         elapsed_ms = int((time.perf_counter() - start) * 1000)
         success = resp.status_code == 200
-        # Check for pipeline failure in response body
         if success:
             try:
                 body = resp.json()
@@ -87,7 +78,7 @@ def send_request(gateway_url, video_uri, results, req_id):
                     success = False
             except Exception:
                 pass
-        results.append({
+        result = {
             "timeStamp": timestamp_ms,
             "elapsed": elapsed_ms,
             "label": "Process Video Request",
@@ -105,11 +96,11 @@ def send_request(gateway_url, video_uri, results, req_id):
             "Latency": elapsed_ms,
             "IdleTime": 0,
             "Connect": 0,
-        })
+        }
         status = "OK" if success else "FAIL"
     except Exception as e:
         elapsed_ms = int((time.perf_counter() - start) * 1000)
-        results.append({
+        result = {
             "timeStamp": timestamp_ms,
             "elapsed": elapsed_ms,
             "label": "Process Video Request",
@@ -127,10 +118,18 @@ def send_request(gateway_url, video_uri, results, req_id):
             "Latency": elapsed_ms,
             "IdleTime": 0,
             "Connect": 0,
-        })
+        }
         status = "ERR"
 
+    with results_lock:
+        results.append(result)
     print(f"  [{req_id:3d}] {status} {elapsed_ms/1000:.1f}s  {video_uri.split('/')[-1]}")
+
+
+def schedule_request(delay, gateway_url, video_uri, results, results_lock, req_id):
+    """Sleep until the scheduled time, then send the request."""
+    time.sleep(delay)
+    send_request(gateway_url, video_uri, results, results_lock, req_id)
 
 
 def main():
@@ -184,22 +183,26 @@ def main():
     print()
 
     results = []
+    results_lock = threading.Lock()
     start_time = time.time()
 
-    # Schedule all requests via gevent
-    greenlets = []
+    # Launch all requests as threads with scheduled delays
+    threads = []
     for i, arrival_t in enumerate(arrival_times):
         video = next(video_cycle)
-        g = gevent.spawn_later(
-            arrival_t,
-            send_request,
-            args.gateway, video, results, i + 1
+        t = threading.Thread(
+            target=schedule_request,
+            args=(arrival_t, args.gateway, video, results, results_lock, i + 1),
+            daemon=True,
         )
-        greenlets.append(g)
+        t.start()
+        threads.append(t)
 
-    # Wait for duration + extra time for last requests to complete
-    sleep(args.duration + 60)
-    gevent.joinall(greenlets, timeout=120)
+    # Wait for all threads (duration + generous buffer for in-flight requests)
+    deadline = start_time + args.duration + 120
+    for t in threads:
+        remaining = max(0, deadline - time.time())
+        t.join(timeout=remaining)
 
     wall_time = time.time() - start_time
     print(f"\nExperiment complete in {wall_time:.0f}s")
@@ -216,7 +219,6 @@ def main():
         "sentBytes", "grpThreads", "allThreads", "URL", "Latency",
         "IdleTime", "Connect"
     ]
-    # Sort by timestamp for clean output
     results.sort(key=lambda r: r["timeStamp"])
     with open(jtl_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
